@@ -1,0 +1,885 @@
+{
+  "schema": 1,
+  "source_repository": "https://github.com/CrispStrobe/CrispCloud",
+  "source_commit": "bffdfbb49433859823081f2198f16e33be8369a6",
+  "note": "Initial source ownership transfer; subsequent commits are maintained here. Upstream package manifests remain authoritative for vendor integrity.",
+  "original_package_objects": [
+    {
+      "path": "packages/crisp_ebook/.gitignore",
+      "git_blob": "214f38fbd72fa5bd4883f4195891c984222679b0"
+    },
+    {
+      "path": "packages/crisp_ebook/README.md",
+      "git_blob": "c6184dc0a85ad0eca23c2d5c67755bf166ce05a6"
+    },
+    {
+      "path": "packages/crisp_ebook/analysis_options.yaml",
+      "git_blob": "89635fe11e768c1ca1dcb41710d16fa77e4186c1"
+    },
+    {
+      "path": "packages/crisp_ebook/lib/crisp_ebook.dart",
+      "git_blob": "8f1adacc0e51f7ba37e9caf5f3e33a2ab08d6230"
+    },
+    {
+      "path": "packages/crisp_ebook/lib/src/document.dart",
+      "git_blob": "0b3f6249c48bad818d13d0d06b5fddac947134bd"
+    },
+    {
+      "path": "packages/crisp_ebook/lib/src/fictionbook.dart",
+      "git_blob": "5a78ce5ce283deb274db1c3499ce2185b25042b1"
+    },
+    {
+      "path": "packages/crisp_ebook/lib/src/models.dart",
+      "git_blob": "143a2e92a3950a111c9299e05bae562ab5e6e95a"
+    },
+    {
+      "path": "packages/crisp_ebook/lib/src/prose.dart",
+      "git_blob": "2d00f6a53b84fd4e4d0e45e84cf24674d8568c3e"
+    },
+    {
+      "path": "packages/crisp_ebook/lib/src/zip_container.dart",
+      "git_blob": "d83dbf5a9ce33334e4c66f075ed8c8409c7a8d93"
+    },
+    {
+      "path": "packages/crisp_ebook/pubspec.lock",
+      "git_blob": "979ce3f515954f374908d72fbc6306a89affdc9f"
+    },
+    {
+      "path": "packages/crisp_ebook/pubspec.yaml",
+      "git_blob": "324da0373729df5c409f761ed606d4e6397a1cc5"
+    },
+    {
+      "path": "packages/crisp_ebook/test/document_test.dart",
+      "git_blob": "732127a3c2a1586b061f4a4b1618c307ec1d20bd"
+    },
+    {
+      "path": "packages/crisp_ebook/test/fictionbook_test.dart",
+      "git_blob": "116ca44a229f7e1cf99e39f238f9bc2ea66a7d3a"
+    },
+    {
+      "path": "packages/crisp_ebook/test/schema/fictionbook/FictionBook.xsd",
+      "git_blob": "bc55511aba3b74b4a2f9ab931a6f1885deac6dc1"
+    },
+    {
+      "path": "packages/crisp_ebook/test/schema/fictionbook/FictionBookGenres.xsd",
+      "git_blob": "e61ad042e78d3ab1f606d926aca20dea1632a59a"
+    },
+    {
+      "path": "packages/crisp_ebook/test/schema/fictionbook/FictionBookLang.xsd",
+      "git_blob": "27111ff99df9b4655be35ceb72b95c3310c1b909"
+    },
+    {
+      "path": "packages/crisp_ebook/test/schema/fictionbook/FictionBookLinks.xsd",
+      "git_blob": "8c8abb934fbb4c0ef912ed7e24adc975a2b5f89c"
+    },
+    {
+      "path": "packages/crisp_ebook/test/schema/fictionbook/LICENSE.md",
+      "git_blob": "89dbbf3948cad06e3cbbe426e56f6321ed60d4f2"
+    },
+    {
+      "path": "packages/crisp_ebook/test/schema/fictionbook/UPSTREAM.json",
+      "git_blob": "420155979578d2df537219d1e34f3dd44d871a34"
+    },
+    {
+      "path": "packages/crisp_ebook/test/structured_prose_test.dart",
+      "git_blob": "95a8c98af83c208dcd7e67ef9056705164f1ddf3"
+    },
+    {
+      "path": "packages/crisp_ebook/tool/export_fictionbook_fixture.dart",
+      "git_blob": "c0a9c9b36b81e631a852c4270d2001a3b7fdbec7"
+    },
+    {
+      "path": "packages/crisp_ebook/tool/fictionbook_fixture.dart",
+      "git_blob": "2384e6bd1cdc8c0d4865ef7a0f7b89cac2dc0824"
+    },
+    {
+      "path": "packages/crisp_ebook/tool/generate_fixtures.dart",
+      "git_blob": "5003afef43f1236ba1728dca3ff931730ba980bc"
+    },
+    {
+      "path": "packages/crisp_ebook/tool/import_fictionbook_fixture.dart",
+      "git_blob": "03851961aca84576f2742033a9bcc16e596ff40e"
+    },
+    {
+      "path": "packages/crisp_ebook/tool/verify_fictionbook_export.py",
+      "git_blob": "d84dbe922058fdd991de1f8da09365735d7b0313"
+    },
+    {
+      "path": "packages/crisp_ebook/tool/verify_fictionbook_foliate.mjs",
+      "git_blob": "d5d3f8c80f683f4cbd01cfacbb9ec90b0f4d181c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/.gitignore",
+      "git_blob": "171121d005b40a659677c7d8bde8fa977c886d6a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/LICENSE",
+      "git_blob": "0b5a505dbe336e8391d78fe57136d3de541adb36"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/README.md",
+      "git_blob": "3414d9697c34fd22875454f5c5a26b5732ef232c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/UPSTREAM.json",
+      "git_blob": "ea013935a2215d5039ee5ca1f22ddf99e308df7d"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/UPSTREAM.md",
+      "git_blob": "de618ce5141d00abc994921905b691bc6efa62bc"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/UPSTREAM.patch",
+      "git_blob": "4ab5ca356f0f2cbb1dd8193bc80fe245a3e02fef"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/WASM.json",
+      "git_blob": "7a250a2d99f394556ebf32909247504059fc40a8"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/analysis_options.yaml",
+      "git_blob": "cbb4ee5c8ba4d5b8d3a2d228a2294648439fcdd5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/assets/kindling_metadata.wasm",
+      "git_blob": "f943815cc9034f7a2381a15ba1331b2cfe8c70de"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/assets/metadata_runtime.js",
+      "git_blob": "a9ef39ddde0a21e6fb2c74fd3fe2d53ef12618fa"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/assets/metadata_worker.js",
+      "git_blob": "93d26e00dab8cf98dfcc018db1b964c078178cda"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/dart_test.yaml",
+      "git_blob": "85a4d239578604748eb7e74cc1996bccf24aa17b"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/hook/build.dart",
+      "git_blob": "73aa5521a25adde26d3b43ae7b676d8fc685e587"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/crisp_ebook_conversion.dart",
+      "git_blob": "3f4f3b0a365166e8d77ee3e142fe3b79bf9c104c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/src/build_config.dart",
+      "git_blob": "4d594a6fb42d669c26752b190ed306cb22727867"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/src/converter.dart",
+      "git_blob": "37067af937d4202e81b224858d6e336c9b62f80c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/src/converter_io.dart",
+      "git_blob": "934b3354f9b70c0b140ca49947eb3b8ed31b74be"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/src/converter_stub.dart",
+      "git_blob": "2f05146394fe8e8ffa35cf14def5fdfad1fdd05e"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/src/converter_web.dart",
+      "git_blob": "e94d5426121cc7f11383576835be6d70e75a281b"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/lib/src/models.dart",
+      "git_blob": "b53597b84fba01d0553f4279c3813f9fd42c8704"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/licensing/THIRD_PARTY_LICENSES.txt",
+      "git_blob": "257ae133c93c2d17302038fb4e7622c5d9385f09"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/licensing/cargo_licenses.json",
+      "git_blob": "0d045a4322a330a8ece3ab23223136123a4b3344"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/licensing/upstream/const-str-0.3.2-LICENSE",
+      "git_blob": "afe5d46c69fa6f01fd1e7fbf0c12b6c36f2a6d8a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/licensing/upstream/cssparser-color-0.1.0-LICENSE",
+      "git_blob": "2f8ed188e8baccf3ba1e11e52a79f851d6a13468"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/licensing/upstream/lightningcss-derive-alpha.43-LICENSE",
+      "git_blob": "d8b475b6e17e390d702c9be4d3a735c7622b9735"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/Cargo.lock",
+      "git_blob": "35b9c1b2222df0759716a01b7b7f542c3360e9d8"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/Cargo.toml",
+      "git_blob": "d7eff97cc27df836f9997a756feac7eeb5b5fbac"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/src/lib.rs",
+      "git_blob": "b980f1905ef6c925ab93e276031e2f410c0ce443"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/src/main.rs",
+      "git_blob": "10ecfe845c2201361e29dff61e4294d0308a0400"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/Cargo.toml",
+      "git_blob": "fe0e0bb32e1ce7200eee1acf540235d43593c21f"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/LICENSE",
+      "git_blob": "202e490545f906566601e6fa87aed3a6cea2c8ab"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/README.md",
+      "git_blob": "c1f8b3274fb6bd6553ce6c3db221e0d47118daf9"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/cbr.rs",
+      "git_blob": "d4c2125cd8ba5c4af4828ce6eefacd0458a72e2a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/content.rs",
+      "git_blob": "389bb110757a9e40f7a3bec326ec5435b8259a7d"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/cover.rs",
+      "git_blob": "197761dd06187c95da5dade68db10a73b2877791"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/cross_refs.rs",
+      "git_blob": "54d4f1bff544eb72c0101ac6a67bd35dce922163"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/css_forbidden.rs",
+      "git_blob": "0ae167b64e66ea996816eb2aeee9adeecd8dae3f"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/dict.rs",
+      "git_blob": "d3e9e717559691047c25579d9c2643b85b3c3651"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/file_case.rs",
+      "git_blob": "d29ce6622f97403b3f87b934c499470e09e8c30c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/filenames.rs",
+      "git_blob": "f3b7282b2e5bfb65fcdc803049969c4ceb41b5e9"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/fixed_layout.rs",
+      "git_blob": "14652e5b4b102c3da9fe6b217c601846a6d0eaa0"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/helpers.rs",
+      "git_blob": "fa364e09a95790c1ae85a0c8253ab6d7eef26cf5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/image_integrity.rs",
+      "git_blob": "618f54d78b002f85d7c2641c694fb7020ea75c3a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/images.rs",
+      "git_blob": "f8bc4438055577f4bc580860e507c1f3f23cbb2f"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/manifest_spine.rs",
+      "git_blob": "05bef6848324c149e67d22ddc0f429bca5511e1a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/metadata.rs",
+      "git_blob": "eaaa550cd62f0d0b3b340054f0fc27e2e4832b86"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/mod.rs",
+      "git_blob": "6857334ea1432de7cac69da3f6c795f30657f477"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/nav_links.rs",
+      "git_blob": "c565244c2f964e12560375d1306ad701454de273"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/navigation.rs",
+      "git_blob": "1ab525634f1b349d66e84db7f4e17538909367a1"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/opf_grammar.rs",
+      "git_blob": "b99937eca0d68eb28398bd31376b33202d26289c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/parse_encoding.rs",
+      "git_blob": "50f4adb1bbf358aa130bff469a377bc363dda7a5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/checks/toc_extras.rs",
+      "git_blob": "c407d0fb417e903118f851ac8518ddbcd9e00682"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/cncx.rs",
+      "git_blob": "571b1fd09a8441355078683db45e73edaa6f8d4d"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/comic.rs",
+      "git_blob": "a39659001e190f1b8d3a93218a7431f8772fdff7"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/dict_css.rs",
+      "git_blob": "d8ae2b72d44963c1b93c8fe614f57c5bc54f07d9"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/epub.rs",
+      "git_blob": "86865701d29d311421c34b119929cde4367daf75"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/epub_build.rs",
+      "git_blob": "e57db37935cd5b84119bf77c45ae17e477b31c86"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/exth.rs",
+      "git_blob": "455480eb22ffbf6a20c967c2ff547da01a8461bd"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/extracted.rs",
+      "git_blob": "d4f59d8050c0ac11cbb9cdcc6b010f73bb10a1c1"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/font_injection.rs",
+      "git_blob": "5a4388d13c9fb7394ee6865bd3bc02216ef5186b"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/fonts.rs",
+      "git_blob": "fc68f8896b09ea4bb97729ef002b26f9307a310e"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/html_check.rs",
+      "git_blob": "87ac014a70d37c98164c530ca2621528fa2390d1"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/huffcdic.rs",
+      "git_blob": "5e470cd809bdc0c8cc4e400b783c641c1deb9292"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/huffdic_encode.rs",
+      "git_blob": "a5811c2064244f5bd98c995367632e47c1f45a16"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/indx.rs",
+      "git_blob": "4c07fccaf9247347328cecf23c9b2f842f8df234"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/kdp_rules.rs",
+      "git_blob": "49a52110bff79273c60557c2323baf2d897758b9"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/kf8.rs",
+      "git_blob": "1da700a2d279c8e52135f34b4dcf15405c548f36"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/lib.rs",
+      "git_blob": "401b4a2494b43e238f0768786a24b317fd3bfdb5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/links.rs",
+      "git_blob": "d12bacf18c960842839f1482123bd06207b3fd95"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/lookup.rs",
+      "git_blob": "29323b7fe2aa0b85cebdd9568f626c9c77a74d52"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/lookup/collator.rs",
+      "git_blob": "8b26d3b3b1193b3d06059bc07b469e5968c3ab01"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/lookup/format.rs",
+      "git_blob": "b65dab59911b202ba285251bd3006172b19fb89a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/main.rs",
+      "git_blob": "111b9efeae0044ad33a9b93e1476987331bd98a6"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/mobi.rs",
+      "git_blob": "357deacd79c3c6dd3b952b842d889030f944190e"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/mobi_check.rs",
+      "git_blob": "c717c3c6295672f1d84b0128a4549619bfef67b8"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/mobi_dump.rs",
+      "git_blob": "6bbe3eb7061825cfda1c06596b950ac8a2631a37"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/mobi_rewrite.rs",
+      "git_blob": "074a3190b08294bbe27243fb11b0bcf56f667b30"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/moire.rs",
+      "git_blob": "91f4b940f24b3522e7dde6841b5cbc6fba952b9e"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/nav.rs",
+      "git_blob": "5e27d27b3e2e327998d861362e2248a6a23206f5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/opf.rs",
+      "git_blob": "f9475fb3fcfb2e7c7eb12c16dcb7eec83ef4d0c5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/ordt.rs",
+      "git_blob": "c5b93017fb08ec46f15623cbf2d21a44bf2fe645"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/ordt_greek.bin",
+      "git_blob": "d89014173bcb74949e0d6f33aed2dd7f56705df6"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/palmdoc.rs",
+      "git_blob": "c8e3f28cd4c2fcf39bebc7363063900482918656"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/profile.rs",
+      "git_blob": "901751a1e834b9fdf66787b333617ffb50b68301"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/repair.rs",
+      "git_blob": "2fcd9058468558f71fed2c06dd1d180a8a03a5cb"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/stardict.rs",
+      "git_blob": "17529864c77d339ca437d7c79a851a480e309c8e"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/tests.rs",
+      "git_blob": "690aa4549089947668c15823ebf304a842a13b96"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/thumbnail.rs",
+      "git_blob": "300201c56e72c72b26d226a2b5682cd12ed9a582"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/validate.rs",
+      "git_blob": "1718a108591e1544521912091e31929e6244d90f"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/vwi.rs",
+      "git_blob": "128c82afa63885631e7e6607715aba8d99d0e176"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/native/vendor/kindling/src/xml_text.rs",
+      "git_blob": "2e8eb7933ddf214dff4ad82a9ae2dcd2d5012291"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/pubspec.lock",
+      "git_blob": "52e121c961891c549fcd5323c860117a2a2f045b"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/pubspec.yaml",
+      "git_blob": "73a02c65c20337bca7e7a01bf5066b53d1aa9b01"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/test/conversion_test.dart",
+      "git_blob": "07bfb5f4f803048293689730e70c09ea327f9675"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/test/fixtures/book.epub",
+      "git_blob": "1e3d332518c96dae6935f977793441fe5e9e8b2c"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/test/fixtures/external_resource.epub",
+      "git_blob": "fc56eeadae702d2840d33672e5d9bc6fcb33dea6"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/test/fixtures/protected.epub",
+      "git_blob": "4800d5c37bbbf84c03ff049b39c56c1036d15272"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/test/fixtures/traversal.epub",
+      "git_blob": "343f65bbf437061033646ebf5faf04097ed01fdd"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/test/metadata_fields_test.dart",
+      "git_blob": "08d4101d101bb4afd7bb2df01b070ce0f6f4188a"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/build_metadata_wasm.py",
+      "git_blob": "37c3f487f8c62af9748596a93bbe63a4d6ab1918"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/check_licenses.py",
+      "git_blob": "7d89766b4c42f098a3f9b0daa6fff292a2adfcac"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/check_vendor.py",
+      "git_blob": "abf4b80ce18cfef2a137819d8c7896ba5daeb7cc"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/check_wasm.py",
+      "git_blob": "eca485b2344161a0132e53f7174579ed7273ee0f"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/import_publication_fixture.dart",
+      "git_blob": "7279cd9e3da7427d018d9c19ed7dccd20786165f"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/make_fixtures.py",
+      "git_blob": "375942d3433b68a6f15ec49ebf220081f400a9f9"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/metadata_wasm_smoke.mjs",
+      "git_blob": "ce23c52210027c86a8d95fdf145020d7a0acf6e2"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/normalize_import_fixture.mjs",
+      "git_blob": "236721541132093279d6e7cd93b0fbb827362706"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/run_web_metadata_probe.mjs",
+      "git_blob": "60758a5bc7c89faf75c1f125a626632b183524c7"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/smoke.py",
+      "git_blob": "d65e9aede3e61d5bb0c6332006ab6be9e5c010eb"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/verify_import_chain.py",
+      "git_blob": "712fc30c0bf8218c296a864c8a34b59397868f45"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/web_metadata_probe.dart",
+      "git_blob": "cc21928b899037070322efd03399e4a3a0eda6d7"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/tool/web_probe.dart",
+      "git_blob": "b7f0251b2cf826ce0300e46b209af553d08c1cbc"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/wasm/Cargo.lock",
+      "git_blob": "114e47eede33da86ccd859236dd75caff1a3d3c5"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/wasm/Cargo.toml",
+      "git_blob": "16c619cdda45ee359deb6d58d4adbd8699169fe9"
+    },
+    {
+      "path": "packages/crisp_ebook_conversion/wasm/src/lib.rs",
+      "git_blob": "3698ac1e6b134965fe7f082de4eaf4423331d09e"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/.gitignore",
+      "git_blob": "67d510151111fd08d7c0d372598dfebdf49c932e"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/LICENSE",
+      "git_blob": "5930571b73151702a913179ef5f96313ad7d25d3"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/README.md",
+      "git_blob": "b4d708ddaa33b66dc120d31ef67f4c34dc980638"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/UPSTREAM.json",
+      "git_blob": "27bdcf2551ac9c49329b9a47dfb4902e7bca5969"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/comic-book.js",
+      "git_blob": "cf41d11f8c0ead6681c07b3a6906830397a6d1ae"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/epub.js",
+      "git_blob": "706049f834df7f4d223a4f5e8add986312492edf"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/epubcfi.js",
+      "git_blob": "712ead5359b3d30e4a3dbf18de4ca0b9eb37a597"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/fb2.js",
+      "git_blob": "74784ad177a0622b1e1b4e0f67d775306456c4f6"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/fixed-layout.js",
+      "git_blob": "7a4ce654b009e699d7446a09a45d7efb327b42ed"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/footnotes.js",
+      "git_blob": "a1058ccd3816cafff71a5d538c33d73236124ed8"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/mobi.js",
+      "git_blob": "c3724dae079fa06617c74cd68038b2d4792547ab"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/overlayer.js",
+      "git_blob": "6fd03ab58505a7a3f196c570ce6a47ae437b747c"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/paginator.js",
+      "git_blob": "dcb391df1a3e2f0fd4282da8f24d1413a3ba54f5"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/progress.js",
+      "git_blob": "f01c512c77c6eea45ce9b7745eafd44283b8bb26"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/search.js",
+      "git_blob": "a6f176ff7c2f8fbec7401120ae917d119257995f"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/text-walker.js",
+      "git_blob": "c1249b79c6beca30e8f4d27e96cd05fa869ef67b"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/tts.js",
+      "git_blob": "bf665c5d0d80d364361ed0ca9ae32d3804a43386"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/vendor/fflate.js",
+      "git_blob": "e1a21e982fefc2021cce24909764661ac6e0fd37"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/vendor/zip.js",
+      "git_blob": "564d9ec409d71467877ccd9f564442095f4cf8e4"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/foliate/view.js",
+      "git_blob": "2a830732730b92c8802acc938cb2eb48950dbe08"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/image_dimensions.js",
+      "git_blob": "eeadff146ca8b1368b1ef7117656c21eb75fa383"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/index.html",
+      "git_blob": "93326fdcb994c84a53708cbca4efaacec5ab0d03"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/licenses/fflate-LICENSE.txt",
+      "git_blob": "e84f0d6caca033c62946025c0237a499459af698"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/licenses/flutter-inappwebview-LICENSE.txt",
+      "git_blob": "6ccd8da42c29a4c8852de67b619e987feccb77af"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/licenses/foliate-js-LICENSE.txt",
+      "git_blob": "5930571b73151702a913179ef5f96313ad7d25d3"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/licenses/sjcl-LICENSE.txt",
+      "git_blob": "983d342e11c20c8ef9bb2890d797c35f0874dcd0"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/licenses/zip-js-LICENSE.txt",
+      "git_blob": "c4fd485e3d1084008e5dbdd540a05384525c9858"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/normalize.js",
+      "git_blob": "e06db67f6bee4cfb353071fb6bf62cc2d2055eab"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/reader.css",
+      "git_blob": "3e4ac24311d5562dd350e4a96e483dc8cd5562e5"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/reader.js",
+      "git_blob": "6d80e1db967a3fcb0d2dbf66095bdacab74351b0"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/reader_compat.js",
+      "git_blob": "cb28dd38b062b45c3f258a24b7a57a8de33a7c9d"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/reader_controls.js",
+      "git_blob": "19913b1645db56370990f59e695b312b52d12c3c"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/reader_search.js",
+      "git_blob": "57cacc7dc4816e16e3466241207fa1e2aeaf7473"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/assets/security.js",
+      "git_blob": "059a5ae4f0d94ab3665cb51a8c7bda1b402b10b9"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/crisp_ebook_reader.dart",
+      "git_blob": "dc25df0e4f8b4f788ca325213953ff5367e00a88"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/controller.dart",
+      "git_blob": "bbae0ebda079744b30111336f48062d8e1b7b846"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/asset_server.dart",
+      "git_blob": "f85bef2bf97198c9a6daeec945f6f121f49a7bd6"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/host.dart",
+      "git_blob": "9429a4fd33a0eb255f4c26c79a41dea8cb590aa2"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/host_linux.dart",
+      "git_blob": "d7e60fad2e0956131543cf67995c21b578412157"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/host_native.dart",
+      "git_blob": "382e63ea030654fa3eaf650bdaaf00e3b43b5edc"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/host_stub.dart",
+      "git_blob": "4982cc2d5c59329834d7501a28e90c78085eb7f3"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/host_web.dart",
+      "git_blob": "4df0bd155e791c6f60f799808e3da035d209d4eb"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/linux_host_probe.dart",
+      "git_blob": "19cd504ddb6ef816d4cead36debe05a6cd91d484"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/hosts/linux_host_status.dart",
+      "git_blob": "04911c6500c704ae131e9ca6f6b9e7b8379b0cce"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/models.dart",
+      "git_blob": "5e76853f9ef7be2bf8eee0959117eae8bb1a6c81"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/lib/src/reader.dart",
+      "git_blob": "11ebc154ae90e87a60294e85b396e4c4d889a1a7"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/CMakeLists.txt",
+      "git_blob": "1ca7631f15bbee09ace8b16de84b8806a6a6e5b5"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/crisp_ebook_reader_plugin.cc",
+      "git_blob": "8b113ed61e90e12699b441ffa34f09a94457a460"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/include/crisp_ebook_reader/crisp_ebook_reader_plugin.h",
+      "git_blob": "2513ef35e22ea96339931e5d3461bd0c33acf5ab"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/reader_runtime_probe.h",
+      "git_blob": "30f8e2471860c2231fab0574e17e46910cbf122c"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/reader_surface_size.h",
+      "git_blob": "b7dd8b7769f0902864894f93d285604266b40bfc"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/reader_webkit_settings.h",
+      "git_blob": "38a2ce6dc792b7dbb13b4c9d09d961a4011d9e78"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/linux/webkit_runtime_probe.cc",
+      "git_blob": "7c9ba0d6db60570bf274b9c29e1988d170e58cb6"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/package-lock.json",
+      "git_blob": "13f91aa7be05c8c45758aa23e4ac753dbb46ead7"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/package.json",
+      "git_blob": "7bac363a3db74e3a5920482aedd472c1f184e505"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/patches/foliate.patch",
+      "git_blob": "7d4b268be4d7908094dd55654dae9c1a87b3baba"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/pubspec.yaml",
+      "git_blob": "a25b12ddb3a48f72a723f77a41b28faf7a5b7acb"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/make_fixtures.py",
+      "git_blob": "0e561ec82197dee65ae71591a9006fc75d2582a4"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/parser_smoke.mjs",
+      "git_blob": "4c0b960d1ac82d91dc27b84fb82c2414d6a5a02c"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/reader_compat.mjs",
+      "git_blob": "7112dd2ee3f75d27f471dd38552c2f629783927d"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/reader_controls.mjs",
+      "git_blob": "c9c93dab0adfb117b556321ddd9b08db257b05d4"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/reader_search.mjs",
+      "git_blob": "cff28961901b5e75fcc9f6fa72a79070dd535b39"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/reader_smoke.mjs",
+      "git_blob": "4b84cfb8fe2353b2e9216e04e24d6cfcd6732f42"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/browser/resource_lifecycle.mjs",
+      "git_blob": "b42a4294307b156ea103ce38f5e749dedd7294ea"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/controller_test.dart",
+      "git_blob": "96b75a45f5a93a9b9d95d44ead164631f771cfd7"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/linux/reader_host_integration.dart",
+      "git_blob": "5624b06cfe2615fb0b65739b1bec50cc22e15ef4"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/linux/runtime_probe_test.cc",
+      "git_blob": "988a4793e821a725701e71285db5a0785738bb02"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/linux/surface_size_test.cc",
+      "git_blob": "247c5fe496b20e3d190eec2617f3efdb744ef307"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/native/platform/AppTransportSecurity.plist",
+      "git_blob": "b8a1425d47d0be461de32f4a7f32e32be7d65c10"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/native/platform/README.md",
+      "git_blob": "29534f6906b56f2731b963244757e43a38a0805b"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/native/platform/ebook_network_security_config.xml",
+      "git_blob": "42ed498c88d0a33ff2ca77c7df2a1dde1fb3148c"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/test/native/reader_platform_integration.dart",
+      "git_blob": "466756d5fe9ef7630724b20adde5b7778d766d61"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/tool/capture_linux_host.py",
+      "git_blob": "47b01f9c9652bdeca01404f23e6b49ff4db9667a"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/tool/check_vendor.py",
+      "git_blob": "3b5e7169b17a1287353a0e1a6d89bce7089e6472"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/tool/prepare_linux_host_smoke.py",
+      "git_blob": "202b196a8c249acb3f1c434f0736fa96fd422c87"
+    },
+    {
+      "path": "packages/crisp_ebook_reader/tool/prepare_native_host_smoke.py",
+      "git_blob": "fc2d67ddde31ae85ab3a7ecbe757afda955c506d"
+    }
+  ],
+  "application_modules": {
+    "lib/services/ebook_edit_session.dart": "lib/src/edit_session.dart",
+    "lib/services/ebook_chapter_reader_controller.dart": "lib/src/portable_reader_controller.dart",
+    "lib/services/ebook_reading_data.dart": "lib/src/reading_data.dart",
+    "lib/widgets/ebook_chapter_reader.dart": "lib/src/widgets/portable_reader.dart",
+    "lib/widgets/ebook_appearance_dialog.dart": "lib/src/widgets/appearance_dialog.dart",
+    "lib/widgets/ebook_prose_editor.dart": "lib/src/widgets/prose_editor.dart",
+    "lib/services/image_edit_session.dart": "lib/src/raster_safety.dart (bounded inspection only)"
+  }
+}

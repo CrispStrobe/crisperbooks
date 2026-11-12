@@ -1,0 +1,11 @@
+**/.dart_tool/
+**/build/
+**/coverage/
+**/node_modules/
+**/target/
+**/.flutter-plugins*
+**/pubspec_overrides.yaml
+*.log
+*.pyc
+**/__pycache__/
+.DS_Store
