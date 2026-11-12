@@ -32,9 +32,14 @@ def main() -> None:
         actual = hashlib.sha256((SCHEMA / name).read_bytes()).hexdigest()
         if actual != expected:
             raise SystemExit(f"Official schema changed without review: {name}")
+    package_config = next((parent / ".dart_tool/package_config.json"
+                           for parent in (ROOT, *ROOT.parents)
+                           if (parent / ".dart_tool/package_config.json").is_file()), None)
+    if package_config is None:
+        raise SystemExit("Run flutter pub get in the package or its workspace first")
     directory = args.directory.resolve()
     if not args.no_generate:
-        subprocess.run([args.dart, "--packages=.dart_tool/package_config.json",
+        subprocess.run([args.dart, f"--packages={package_config}",
                         "tool/export_fictionbook_fixture.dart", str(directory)],
                        cwd=ROOT, check=True)
     plain = (directory / "fixture.fb2").read_bytes()
@@ -58,7 +63,7 @@ def main() -> None:
     validate("fixture.fb2")
     subprocess.run([args.node, str(ROOT / "tool/verify_fictionbook_foliate.mjs"),
                     str(directory)], cwd=ROOT, check=True)
-    subprocess.run([args.dart, "--packages=.dart_tool/package_config.json",
+    subprocess.run([args.dart, f"--packages={package_config}",
                     "tool/import_fictionbook_fixture.dart", str(directory)],
                    cwd=ROOT, check=True)
     validate("roundtrip.fb2")

@@ -84,3 +84,5 @@ Read [package boundaries](docs/architecture.md) and
 [release preparation](docs/publishing.md). Nothing is published to pub.dev.
 Existing licenses and third-party notices are preserved: the facade and EPUB core
 retain AGPL-3.0; the reader/converter keep their package licenses.
+
+The native acceptance harness uses a generated original cover fixture, the workspace package configuration, an explicit Bash pipeline on Android, and a scoped compatibility definition for the Windows WebView plugin on current MSVC. These fixes preserve the production reader and converter validation requirements.

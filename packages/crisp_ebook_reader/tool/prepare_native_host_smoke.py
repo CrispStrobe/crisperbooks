@@ -45,7 +45,19 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 flutter:
   uses-material-design: true
+  assets:
+    - assets/cover.png
 """, encoding="utf-8")
+    assets = output / "assets"
+    assets.mkdir(exist_ok=True)
+    shutil.copyfile(platform_fixtures / "cover.png", assets / "cover.png")
+    if platform == "windows":
+        cmake = output / "windows/CMakeLists.txt"
+        cmake.write_text(cmake.read_text(encoding="utf-8") + '\n'
+                         'if(TARGET flutter_inappwebview_windows_plugin)\n'
+                         '  target_compile_definitions(flutter_inappwebview_windows_plugin PRIVATE '
+                         '_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)\n'
+                         'endif()\n', encoding="utf-8")
     tests = output / "integration_test"
     tests.mkdir(exist_ok=True)
     shutil.copyfile(package / "test/native/reader_platform_integration.dart",

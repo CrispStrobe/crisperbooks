@@ -286,10 +286,9 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: >-
-            cd "$RUNNER_TEMP/ebook-native-host" &&
-            set -o pipefail &&
+            bash -o pipefail -c 'cd "$RUNNER_TEMP/ebook-native-host" &&
             flutter test integration_test/reader_platform_test.dart
-            -d emulator-5554 --reporter expanded 2>&1 | tee ebook-native-host.log
+            -d emulator-5554 --reporter expanded 2>&1 | tee ebook-native-host.log'
       - name: Boot an available iPhone simulator
         if: matrix.platform == 'ios'
         run: |

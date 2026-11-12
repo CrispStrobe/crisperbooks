@@ -9,6 +9,7 @@ import 'package:crisp_ebook/crisp_ebook.dart';
 import 'package:crisp_ebook_conversion/crisp_ebook_conversion.dart';
 import 'package:crisp_ebook_reader/crisp_ebook_reader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -16,11 +17,12 @@ String chapter(String body) =>
     '<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Shelf</title>'
     '</head><body>$body</body></html>';
 
-EpubDocument publication() {
+EpubDocument publication(Uint8List cover) {
   final document = EpubDocument.create(
     title: 'Cross-platform library',
     authors: ['CrispCloud tests'],
   );
+  document.replaceCover(cover, mediaType: 'image/png');
   document.updateText(
     document.chapters.first.path,
     chapter(
@@ -96,7 +98,10 @@ void main() {
         '${Platform.operatingSystemVersion}',
       );
 
-      final document = publication();
+      final cover = await rootBundle.load('assets/cover.png');
+      final document = publication(
+        cover.buffer.asUint8List(cover.offsetInBytes, cover.lengthInBytes),
+      );
       final input = document.toBytes();
       final baseline = Uint8List.fromList(input);
       final converter = KindlingConverter();
