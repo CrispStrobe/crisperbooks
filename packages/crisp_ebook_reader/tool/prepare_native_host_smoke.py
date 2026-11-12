@@ -26,7 +26,7 @@ def prepare(output: Path, platform: str) -> None:
     manifest.write_text(f"""name: crisp_native_ebook_smoke
 publish_to: none
 environment:
-  sdk: '>=3.8.0 <4.0.0'
+  sdk: '>=3.13.0 <4.0.0'
 dependencies:
   flutter:
     sdk: flutter

@@ -2,7 +2,6 @@
 // real Android/iOS/desktop Flutter target, never on flutter_tester.
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:crisp_ebook/crisp_ebook.dart';
@@ -300,7 +299,9 @@ void main() {
         request.response.close();
       });
       final remote = 'http://127.0.0.1:${probe.port}';
-      final hostile = publication();
+      final hostile = publication(
+        cover.buffer.asUint8List(cover.offsetInBytes, cover.lengthInBytes),
+      );
       final path = hostile.chapters.first.path;
       hostile.updateText(
         path,
