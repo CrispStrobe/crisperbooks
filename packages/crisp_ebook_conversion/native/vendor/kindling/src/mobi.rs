@@ -4478,7 +4478,13 @@ fn compress_text(text_bytes: &[u8]) -> (Vec<Vec<u8>>, usize) {
         .map(|(s, e)| text_bytes[s..e].to_vec())
         .collect();
 
-    let records = if total_length > PARALLEL_THRESHOLD && chunks.len() > 1 {
+    // A browser worker is already isolated from the UI, but WASI Preview 1
+    // has no threads. Preserve record order and bytes using the existing serial
+    // encoder there; native large-book compression keeps its parallel path.
+    let records = if !cfg!(target_family = "wasm")
+        && total_length > PARALLEL_THRESHOLD
+        && chunks.len() > 1
+    {
         // Parallel compression using std::thread
         let num_workers = std::thread::available_parallelism()
             .map(|n| n.get())

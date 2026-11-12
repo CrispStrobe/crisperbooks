@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "engine": "Kindling 0.46.2 shared native request processor",
+  "abi": 2,
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "target": "wasm32-wasip1",
+  "max_memory_bytes": 536870912,
+  "wasm_bytes": 4780479,
+  "wasm_sha256": "59c2e9c49fb62fb17af9886144ee99d37be8b321833fac0e9ca263338a3a0899",
+  "scope": "EPUB export and Kindle metadata; fresh memory-only /job per operation; no host files, sockets or OPFS.",
+  "asset_sha256": {
+    "assets/kindling_conversion.wasm.gz": "142b2446f4ba86fab41a093c3c7ec9864205bac1627b31d720936dc2d2d89f98",
+    "assets/conversion_runtime.js": "fb1bde1fa4fbef151c03837c10d0e78fb18fbf14466e037057e66bf7d5ddae37",
+    "assets/conversion_worker.js": "2cb47fa149e93fa1e47317a595c31739ed1dc5f85282f76632aafd92d1491466"
+  },
+  "source_sha256": {
+    "native/Cargo.toml": "bf8d4f11f658821d5706981f03887d598467bf67fcc2289cce55a85fb5d9a763",
+    "native/Cargo.lock": "7b93a17226266f14453151b7b415f301cc390bc489a36c2f1627e6832b8317f7",
+    "native/src/lib.rs": "e6f9dbebcb68e53024b503d8bddfb5ec032b0fc98d395902875500511d84801d",
+    "native/src/main.rs": "ef1986c514d94cd75e1e50eb08ed9710af2aeba9e14bb8f51abe6dce65516cd7",
+    "UPSTREAM.json": "0675648253a127aeead480dd939138be9887ca049187daf57ad8b1231eebc8ff",
+    "WASI_SHIM.json": "8bfe93ec48029d680e8fbc939e0645a794f38246b1b6fb2fadd5cce1aaf9a977",
+    "tool/build_conversion_wasm.py": "34f685726ba5fa8a2e780955664844ad7522df79f7dfb4498513e84f8ad18f3d",
+    "tool/check_conversion_wasm.py": "73e4c57ffd6d6e90b41a7f71869ae07685e4acf79f44b1020ff28cc1f0ff0398"
+  }
+}

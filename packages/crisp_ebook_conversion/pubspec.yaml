@@ -3,6 +3,7 @@ flutter:
   assets:
     - licensing/THIRD_PARTY_LICENSES.txt
     - assets/
+    - assets/wasi_shim/
 description: Offline Kindle export and metadata updates using pinned MIT Kindling.
 version: 0.1.0
 publish_to: none

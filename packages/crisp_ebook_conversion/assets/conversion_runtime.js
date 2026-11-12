@@ -22,6 +22,18 @@ export async function instantiateConversionEngine(bytes) {
     if (!exports.some(item => item.name === '_start' && item.kind === 'function') ||
         !exports.some(item => item.name === 'memory' && item.kind === 'memory'))
         throw new Error('Incomplete conversion engine ABI')
+    let version = ''
+    const probe = new WASI(['crisp-kindling', '--version'], [], [
+        new OpenFile(new File([], {readonly: true})),
+        new ConsoleStdout(data => {
+            version += decoder.decode(data)
+            if (version.length > 128) throw new Error('Invalid conversion engine version')
+        }),
+        new ConsoleStdout(() => {}),
+    ], {debug: false})
+    const probeInstance = await WebAssembly.instantiate(module, {wasi_snapshot_preview1: probe.wasiImport})
+    if (probe.start(probeInstance) !== 0 || version.trim() !== 'crisp-kindling 1 (Kindling 0.46.2)')
+        throw new Error('Unreviewed conversion engine version')
 
     async function convert(input, requestJson) {
         if (!(input instanceof Uint8Array) || !input.length || input.length > LIMITS.input_bytes)
@@ -66,8 +78,8 @@ export async function instantiateConversionEngine(bytes) {
         // expanded bytes; Wasm linear memory has its own 512 MiB link limit.
         const maximumFiles = input.length + request.limits.expanded_bytes +
             request.limits.output_bytes
-        const fileSizes = new Map()
-        let totalFiles = 0
+        const fileSizes = new Map([...files.values()].map(file => [file, file.data.length]))
+        let totalFiles = input.length
         function reserve(fd, requested) {
             const file = wasi.fds[fd]?.file
             if (!file) return
