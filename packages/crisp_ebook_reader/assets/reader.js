@@ -8,11 +8,13 @@ import {normalizeAppearance, appearanceStyle, readingCapabilities, progressFract
     guardRendererLifecycle} from './reader_controls.js'
 import {createReaderSearch} from './reader_search.js'
 import {createReaderSpeech} from './reader_speech.js'
+import {createReaderSelection} from './reader_selection.js'
 
 const session = decodeURIComponent(location.hash.slice(1))
 const status = document.getElementById('status')
 let book = null, view = null, filename = '', sourceFormat = '', cleanupSections = null
 let opened = false, appearance = normalizeAppearance(), searchSession = null, speech = null
+let selectionObserver = null
 const highlights = new Map()
 const queueNavigation = createNavigationQueue()
 let pendingNavigation = 0
@@ -79,6 +81,8 @@ function applyAppearance(options) {
 }
 async function open(args) {
     opened = true
+    selectionObserver?.dispose()
+    selectionObserver = null
     speech?.dispose()
     speech = null
     gestureButton.hidden = true
@@ -127,17 +131,6 @@ async function open(args) {
     })
     view.addEventListener('load', ({detail:{doc,index}}) => {
         if (view !== currentView) return
-        let selectionTimer
-        doc.addEventListener('selectionchange', () => {
-            clearTimeout(selectionTimer)
-            selectionTimer = setTimeout(() => {
-                if (view !== currentView) return
-                const selection = doc.getSelection()
-                if (!selection?.rangeCount || selection.isCollapsed) return
-                send({event:'selection', data:{text:selection.toString().slice(0, 20000),
-                    cfi:currentView.getCFI(index, selection.getRangeAt(0)), sectionIndex:index}})
-            }, 150)
-        })
         doc.addEventListener('keydown', event => {
             if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
             const direction = event.key === 'ArrowRight' ? 'goRight'
@@ -166,6 +159,9 @@ async function open(args) {
     guardRendererLifecycle(view)
     applyAppearance(args.appearance ?? {})
     await view.init({lastLocation:args.initialLocation || undefined, showTextStart:false})
+    selectionObserver = createReaderSelection(currentView, {onSelection:data => {
+        if (view === currentView) send({event:'selection', data})
+    }})
     const speechOverlay = '__crisp_read_aloud__'
     const clearSpeechHighlight = () => {
         for (const item of currentView.renderer?.getContents?.() ?? [])
@@ -278,6 +274,7 @@ window.addEventListener('unhandledrejection', event => {
     if (!opened) fail(event.reason)
 })
 window.addEventListener('pagehide', () => {
+    selectionObserver?.dispose()
     speech?.dispose()
     gestureButton.hidden = true
     searchSession?.dispose()
