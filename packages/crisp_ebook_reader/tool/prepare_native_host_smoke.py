@@ -86,8 +86,34 @@ flutter:
         # permit the private asset server only, never arbitrary cleartext.
         shutil.copyfile(platform_fixtures / "ebook_network_security_config.xml",
                         resources / "ebook_network_security_config.xml")
+        # Match the host application's supported AGP/Kotlin/Gradle line.
+        # The current WebView plugin still uses the pre-AGP-9 Proguard DSL.
+        settings = output / "android/settings.gradle.kts"
+        settings_text = settings.read_text(encoding="utf-8")
+        for plugin, version in (("com.android.application", "8.11.1"),
+                                ("org.jetbrains.kotlin.android", "2.2.20")):
+            settings_text, count = re.subn(
+                rf'(id\("{re.escape(plugin)}"\) version ")([^\"]+)(")',
+                lambda match: match[1] + version + match[3], settings_text)
+            if count != 1:
+                raise ValueError(f"Cannot identify the generated {plugin} version.")
+        settings.write_text(settings_text, encoding="utf-8")
+        wrapper = output / "android/gradle/wrapper/gradle-wrapper.properties"
+        wrapper_text, count = re.subn(r"gradle-[0-9.]+-all\.zip",
+                                      "gradle-8.14.1-all.zip",
+                                      wrapper.read_text(encoding="utf-8"))
+        if count != 1:
+            raise ValueError("Cannot identify the generated Gradle distribution.")
+        wrapper.write_text(wrapper_text, encoding="utf-8")
         gradle = output / "android/app/build.gradle.kts"
         text = gradle.read_text(encoding="utf-8")
+        if 'id("org.jetbrains.kotlin.android")' not in text:
+            text = text.replace('id("com.android.application")',
+                                'id("com.android.application")\n    id("org.jetbrains.kotlin.android")')
+        if "kotlinOptions" not in text:
+            text = text.replace("    defaultConfig {", "    kotlinOptions {\n"
+                                "        jvmTarget = JavaVersion.VERSION_17.toString()\n"
+                                "    }\n\n    defaultConfig {")
         text, count = re.subn(r"ndkVersion\s*=\s*[^\n]+",
                               'ndkVersion = "28.2.13676358"', text)
         if count != 1:

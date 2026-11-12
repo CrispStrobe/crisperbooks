@@ -53,9 +53,12 @@ def main():
     if args.java_temp_dir:
         args.java_temp_dir = args.java_temp_dir.resolve()
         args.java_temp_dir.mkdir(parents=True, exist_ok=True)
-    core_config = ROOT.parent / "crisp_ebook/.dart_tool/package_config.json"
-    if not core_config.is_file():
-        parser.error("Run dart pub get in packages/crisp_ebook first")
+    core = ROOT.parent / "crisp_ebook"
+    core_config = next((parent / ".dart_tool/package_config.json"
+                        for parent in (core, *core.parents)
+                        if (parent / ".dart_tool/package_config.json").is_file()), None)
+    if core_config is None:
+        parser.error("Run dart pub get in the core package or its workspace first")
     sources = [ROOT / "test/fixtures/generated" / name
                for name in ("book.azw3", "book.mobi", "legacy.mobi")]
     source_epub = ROOT / "test/fixtures/book.epub"
