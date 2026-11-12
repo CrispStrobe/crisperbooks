@@ -55,11 +55,11 @@ class _WebBackend implements EbookConversionBackend {
             : const Duration(seconds: 8),
       );
       if (result.kind != 'ready' ||
-          result.json['abi'] != 1 ||
+          result.json['abi'] != 2 ||
           result.json['version'] != '0.46.2') {
         throw const EbookConversionException(
           'unavailable',
-          'The bundled browser metadata engine could not be loaded.',
+          'The bundled browser conversion engine could not be loaded.',
         );
       }
       return const EbookConversionCapabilities(
@@ -67,8 +67,8 @@ class _WebBackend implements EbookConversionBackend {
         runtime: EbookConversionRuntime.webAssembly,
         cancellationMode: EbookCancellationMode.workerTermination,
         engineVersion: '0.46.2',
-        canExportAzw3: false,
-        canExportLegacyMobi: false,
+        canExportAzw3: true,
+        canExportLegacyMobi: true,
         canRewriteKindleMetadata: true,
         canReplaceKindleCover: false,
       );
@@ -79,7 +79,7 @@ class _WebBackend implements EbookConversionBackend {
         cancellationMode: EbookCancellationMode.unavailable,
         reason: error is EbookConversionException
             ? error.message
-            : 'The bundled browser metadata engine is unavailable.',
+            : 'The bundled browser conversion engine is unavailable.',
       );
     }
   }
@@ -93,14 +93,6 @@ class _WebBackend implements EbookConversionBackend {
     Uint8List? cover,
     EbookCancellationToken? cancellation,
   }) {
-    if (!metadataOnly) {
-      return Future.error(
-        const EbookConversionException(
-          'unsupportedFormat',
-          'Kindle export requires a native build. Browser metadata editing preserves existing Kindle content.',
-        ),
-      );
-    }
     if (cover != null) {
       return Future.error(
         const EbookConversionException(
@@ -113,12 +105,20 @@ class _WebBackend implements EbookConversionBackend {
         limits.maxInputBytes > 64 * 1024 * 1024 ||
         limits.maxOutputBytes <= 0 ||
         limits.maxOutputBytes > 128 * 1024 * 1024 ||
+        limits.maxExpandedBytes <= 0 ||
+        limits.maxExpandedBytes > 192 * 1024 * 1024 ||
+        limits.maxEntryBytes <= 0 ||
+        limits.maxEntryBytes > 32 * 1024 * 1024 ||
+        limits.maxArchiveEntries <= 0 ||
+        limits.maxArchiveEntries > 10000 ||
+        limits.maxImagePixels <= 0 ||
+        limits.maxImagePixels > 50000000 ||
         input.isEmpty ||
         input.length > limits.maxInputBytes) {
       return Future.error(
         const EbookConversionException(
           'limitExceeded',
-          'Ebook size exceeds the browser metadata limit.',
+          'Ebook size exceeds the browser conversion limit.',
         ),
       );
     }
@@ -126,7 +126,7 @@ class _WebBackend implements EbookConversionBackend {
       return Future.error(
         const EbookConversionException(
           'busy',
-          'A metadata operation is still running.',
+          'A conversion operation is still running.',
         ),
       );
     }
@@ -134,15 +134,15 @@ class _WebBackend implements EbookConversionBackend {
       return Future.error(
         const EbookConversionException(
           'cancelled',
-          'Metadata editing was cancelled.',
+          'Kindle conversion was cancelled.',
         ),
       );
     }
     final request = jsonEncode({
+      'operation': metadataOnly ? 'metadata' : 'export',
       'format': format.extension,
       'metadata': patch?.toJson() ?? <String, Object?>{},
-      'input_limit': limits.maxInputBytes,
-      'output_limit': limits.maxOutputBytes,
+      'limits': limits.toJson(),
     });
     if (utf8.encode(request).length > 131072) {
       return Future.error(
@@ -167,7 +167,7 @@ class _WebBackend implements EbookConversionBackend {
     try {
       final buffer = snapshot.buffer.toJS;
       final result = await _call(
-        _Request(kind: 'rewrite', request: request, bytes: buffer),
+        _Request(kind: 'convert', request: request, bytes: buffer),
         transfer: <JSObject>[buffer].toJS,
         deadline: timeout,
         cancellation: cancellation,
@@ -176,7 +176,7 @@ class _WebBackend implements EbookConversionBackend {
       if (response['ok'] != true) {
         throw EbookConversionException(
           response['code'] as String? ?? 'conversionFailed',
-          response['message'] as String? ?? 'Metadata editing failed.',
+          response['message'] as String? ?? 'Kindle conversion failed.',
         );
       }
       final bytes = result.bytes;
@@ -190,7 +190,7 @@ class _WebBackend implements EbookConversionBackend {
               'BOOKMOBI') {
         throw const EbookConversionException(
           'validationFailed',
-          'Unexpected browser metadata response.',
+          'Unexpected browser conversion response.',
         );
       }
       return EbookConversionResult(
@@ -220,7 +220,7 @@ class _WebBackend implements EbookConversionBackend {
     if (deadline <= Duration.zero) {
       throw const EbookConversionException(
         'timeout',
-        'Metadata editing timed out.',
+        'Kindle conversion timed out.',
       );
     }
     web.Worker? worker;
@@ -237,7 +237,7 @@ class _WebBackend implements EbookConversionBackend {
       final uri = base.resolveUri(
         workerUri ??
             Uri.parse(
-              'assets/packages/crisp_ebook_conversion/assets/metadata_worker.js',
+              'assets/packages/crisp_ebook_conversion/assets/conversion_worker.js',
             ),
       );
       if (!{'http', 'https'}.contains(uri.scheme) ||
@@ -245,7 +245,7 @@ class _WebBackend implements EbookConversionBackend {
           uri.userInfo.isNotEmpty) {
         throw const EbookConversionException(
           'unavailable',
-          'Metadata worker must be a bundled same-origin asset.',
+          'Conversion worker must be a bundled same-origin asset.',
         );
       }
       worker = web.Worker(
@@ -260,36 +260,36 @@ class _WebBackend implements EbookConversionBackend {
           final bytes = reply.bytes?.toDart.asUint8List();
           completion.complete(_WorkerResult(reply.kind, json, bytes));
         } catch (_) {
-          fail('validationFailed', 'Invalid browser metadata response.');
+          fail('validationFailed', 'Invalid browser conversion response.');
         }
       }).toJS;
       worker.onerror = ((web.Event event) {
         event.preventDefault();
         fail(
           'unavailable',
-          'The bundled metadata worker could not be started.',
+          'The bundled conversion worker could not be started.',
         );
       }).toJS;
       worker.onmessageerror = ((web.Event event) {
         fail(
           'validationFailed',
-          'The metadata worker response could not be read.',
+          'The conversion worker response could not be read.',
         );
       }).toJS;
       timer = Timer(
         deadline,
-        () => fail('timeout', 'Metadata editing timed out.'),
+        () => fail('timeout', 'Kindle conversion timed out.'),
       );
       if (cancellation != null) {
         if (cancellation.isCancelled) {
           throw const EbookConversionException(
             'cancelled',
-            'Metadata editing was cancelled.',
+            'Kindle conversion was cancelled.',
           );
         }
         unawaited(
           cancellation.whenCancelled.then((_) {
-            fail('cancelled', 'Metadata editing was cancelled.');
+            fail('cancelled', 'Kindle conversion was cancelled.');
           }),
         );
       }
@@ -304,7 +304,7 @@ class _WebBackend implements EbookConversionBackend {
     } catch (_) {
       throw const EbookConversionException(
         'unavailable',
-        'The bundled metadata worker is unavailable.',
+        'The bundled conversion worker is unavailable.',
       );
     } finally {
       timer?.cancel();

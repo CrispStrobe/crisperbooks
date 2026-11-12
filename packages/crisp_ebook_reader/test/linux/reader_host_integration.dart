@@ -249,13 +249,12 @@ void main() {
     expect(selection!.text, contains('lanterns'));
     expect(selection!.text, isNot(contains('Library paragraph')),
         reason: 'The drag retained Select All instead of a new native range.');
-    final draggedText = selection!.text;
     await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
     await tester.sendKeyEvent(LogicalKeyboardKey.keyC);
     await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
     await until(tester, () async {
       final value = await Clipboard.getData(Clipboard.kTextPlain);
-      return value?.text == draggedText;
+      return value?.text == selection?.text;
     }, 'The dragged native range did not reach the system clipboard.');
 
     final oldLocation = controller.location?.cfi;

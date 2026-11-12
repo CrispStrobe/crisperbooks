@@ -8,6 +8,8 @@ import 'package:crisp_ebook_conversion/crisp_ebook_conversion.dart';
 
 @JS('metadataFixtureBase64')
 external String get _fixture;
+@JS('conversionFixturesJson')
+external String get _conversionFixtures;
 @JS('metadataSmokeFinished')
 external void _finished(String json);
 
@@ -51,11 +53,11 @@ Future<void> main() async {
     );
     check(
       capability.canRewriteKindleMetadata && !capability.canReplaceKindleCover,
-      'Metadata-only capability',
+      'Metadata capability and explicit cover limit',
     );
     check(
-      !capability.canExportAzw3 && !capability.canExportLegacyMobi,
-      'Native export flags stay false',
+      capability.canExportAzw3 && capability.canExportLegacyMobi,
+      'Browser Kindle export capabilities',
     );
     final noop = await converter.rewriteMetadata(
       input,
@@ -77,7 +79,45 @@ Future<void> main() async {
     final repeat = await converter.rewriteMetadata(edited.bytes, patch: patch);
     check(repeat.noOp && equalBytes(repeat.bytes, edited.bytes), 'Idempotence');
     check(equalBytes(input, baseline), 'Original bytes unchanged');
-    await fails(converter.exportKindle(input), 'unsupportedFormat');
+    final fixtures = (jsonDecode(_conversionFixtures) as Map<String, dynamic>)
+        .map((name, value) => MapEntry(name, base64Decode(value as String)));
+    final epub = fixtures['book']!;
+    final epubBaseline = Uint8List.fromList(epub);
+    for (final format in KindleExportFormat.values) {
+      final exported = await converter.exportKindle(epub, format: format);
+      check(exported.format == format, 'Requested export format');
+      check(exported.bytes.length > 78, 'Real Kindle output');
+      check(exported.warnings.isNotEmpty, 'Conversion limitations reported');
+      check(equalBytes(epub, epubBaseline), 'EPUB source retained');
+      final rewrite = await converter.rewriteMetadata(
+        exported.bytes, patch: patch, format: format,
+      );
+      check(rewrite.changes.isNotEmpty, 'Export remains editable');
+    }
+    for (final entry in {'traversal': 'invalidInput',
+      'external_resource': 'invalidInput', 'protected': 'drmProtected'}.entries) {
+      await fails(converter.exportKindle(fixtures[entry.key]!), entry.value);
+    }
+    await fails(
+      converter.exportKindle(Uint8List.fromList([1, 2, 3])),
+      'invalidInput',
+    );
+    final exportToken = EbookCancellationToken();
+    final cancelledExport = converter.exportKindle(epub, cancellation: exportToken);
+    exportToken.cancel();
+    await fails(cancelledExport, 'cancelled');
+    final smallArchive = KindlingConverter(
+      limits: const EbookConversionLimits(maxArchiveEntries: 1),
+    );
+    await fails(smallArchive.exportKindle(epub), 'limitExceeded');
+    final smallExpanded = KindlingConverter(
+      limits: const EbookConversionLimits(maxExpandedBytes: 10),
+    );
+    await fails(smallExpanded.exportKindle(epub), 'limitExceeded');
+    final invalidLimits = KindlingConverter(
+      limits: const EbookConversionLimits(maxImagePixels: 0),
+    );
+    await fails(invalidLimits.exportKindle(epub), 'limitExceeded');
     await fails(
       converter.rewriteMetadata(input, patch: patch, cover: Uint8List(1)),
       'unsupportedOperation',

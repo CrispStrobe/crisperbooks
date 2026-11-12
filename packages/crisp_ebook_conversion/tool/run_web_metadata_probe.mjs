@@ -11,6 +11,9 @@ import http from 'node:http'
 const root = fileURLToPath(new URL('../', import.meta.url))
 const compiled = path.join(root, 'build/web-metadata/probe.js')
 const fixture = (await readFile(path.join(root, 'test/fixtures/generated/book.azw3'))).toString('base64')
+const conversionFixtures = JSON.stringify(Object.fromEntries(await Promise.all(
+    ['book', 'traversal', 'external_resource', 'protected'].map(async name =>
+        [name, (await readFile(path.join(root, `test/fixtures/${name}.epub`))).toString('base64')]))))
 const prefix = '/preview/assets/packages/crisp_ebook_conversion/assets/'
 const origin = 'http://localhost:8080'
 let active = 0, started = 0
@@ -40,7 +43,7 @@ class WorkerAdapter {
             : path.join(root, 'build/missing-worker.js')
         this.worker = new NodeWorker(bootstrap, {eval: true, workerData: {
             worker: pathToFileURL(filename).href,
-            wasm: pathToFileURL(path.join(root, 'assets/kindling_metadata.wasm')).href,
+            wasm: pathToFileURL(path.join(root, 'assets/kindling_conversion.wasm.gz')).href,
         }})
         active++; started++
         this.worker.on('message', data => this.onmessage?.({data}))
@@ -60,11 +63,12 @@ globalThis.self = globalThis
 globalThis.document = {baseURI: `${origin}/preview/`, currentScript: null, scripts: []}
 globalThis.Worker = WorkerAdapter
 globalThis.metadataFixtureBase64 = fixture
+globalThis.conversionFixturesJson = conversionFixtures
 let finish
 const complete = new Promise(resolve => { finish = resolve })
 globalThis.metadataSmokeFinished = json => finish(JSON.parse(json))
 vm.runInThisContext(await readFile(compiled, 'utf8'), {filename: compiled})
-const deadline = setTimeout(() => { throw new Error('Metadata adapter probe timed out') }, 30000)
+const deadline = setTimeout(() => { throw new Error('Conversion adapter probe timed out') }, 30000)
 const result = await complete
 clearTimeout(deadline)
 await Promise.all(terminations)
@@ -77,6 +81,7 @@ if (process.argv.includes('--browser')) {
     const {chromium} = await import('../../crisp_ebook_reader/node_modules/playwright/index.mjs')
     const html = `<!doctype html><meta charset="utf-8"><base href="/preview/">
       <script>globalThis.metadataFixtureBase64=${JSON.stringify(fixture)};
+      globalThis.conversionFixturesJson=${JSON.stringify(conversionFixtures)};
       globalThis.metadataSmokeFinished=value=>globalThis.metadataResult=JSON.parse(value);</script>
       <script src="/probe.js"></script>`
     const server = http.createServer(async (request, response) => {
@@ -84,9 +89,9 @@ if (process.argv.includes('--browser')) {
             const pathname = new URL(request.url, 'http://localhost').pathname
             if (pathname === '/preview/') { response.setHeader('Content-Type', 'text/html'); response.end(html); return }
             const filename = pathname === '/probe.js' ? compiled :
-                pathname.startsWith(prefix) ? path.join(root, 'assets', path.basename(pathname)) : null
+                pathname.startsWith(prefix) ? path.join(root, 'assets', pathname.slice(prefix.length)) : null
             if (!filename) { response.writeHead(404); response.end(); return }
-            response.setHeader('Content-Type', filename.endsWith('.wasm') ? 'application/wasm' : 'text/javascript')
+            response.setHeader('Content-Type', filename.endsWith('.gz') ? 'application/gzip' : filename.endsWith('.wasm') ? 'application/wasm' : 'text/javascript')
             response.end(await readFile(filename))
         } catch { response.writeHead(404); response.end() }
     })
@@ -100,7 +105,7 @@ if (process.argv.includes('--browser')) {
         await page.waitForFunction(() => globalThis.metadataResult, {timeout: 30000})
         const browserResult = await page.evaluate(() => globalThis.metadataResult)
         assert.equal(browserResult.ok, true, JSON.stringify(browserResult))
-        console.log(`PASS actual Chromium metadata adapter: ${browserResult.checks} assertions`)
+        console.log(`PASS actual Chromium conversion/metadata adapter: ${browserResult.checks} assertions`)
     } finally {
         await browser?.close()
         await new Promise(resolve => server.close(resolve))

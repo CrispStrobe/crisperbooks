@@ -93,7 +93,7 @@ def inventory():
         source_url = (
             f"https://crates.io/api/v1/crates/{package['name']}/{package['version']}/download"
             if package["source"] else
-            "https://github.com/CrispStrobe/CrispCloud/tree/feature/ebook-reader-editor/packages/crisp_ebook_conversion"
+            "https://github.com/CrispStrobe/crisperbooks/tree/feature/ebook-reader-editor/packages/crisp_ebook_conversion"
         )
         evidence = []
         for path in files:
@@ -114,11 +114,27 @@ def inventory():
             "license_expression": expression, "selected_grant": GRANTS[expression],
             "evidence": evidence,
         })
+    shim = json.loads((ROOT / 'WASI_SHIM.json').read_text())
+    for name, expected in shim['files'].items():
+        if digest(ROOT / name) != expected:
+            raise SystemExit(f'Unreviewed WASI shim file: {name}')
+    shim_license = ROOT / 'assets/wasi_shim/LICENSE-MIT'
+    notices.append(f"===== {shim['package']} {shim['version']} / LICENSE-MIT =====\n"
+                   f"SPDX: {shim['license_expression']}; selected grant: {shim['selected_grant']}\n"
+                   f"Source code: {shim['source_url']}\n\n{shim_license.read_text().rstrip()}\n")
     return {
         "schema": 1,
-        "scope": "Every resolved native and metadata-Wasm Cargo dependency, including platform and build dependencies.",
+        "scope": "Every resolved native and metadata-Wasm Cargo dependency, including platform/build dependencies, plus the browser WASI shim used by the shared converter.",
         "cargo_lock_sha256": digest(ROOT / "native/Cargo.lock"),
         "wasm_cargo_lock_sha256": digest(ROOT / "wasm/Cargo.lock"),
+        "browser_runtime": {
+            "package": shim['package'], "version": shim['version'],
+            "source_url": shim['source_url'],
+            "license_expression": shim['license_expression'],
+            "selected_grant": shim['selected_grant'],
+            "license_sha256": digest(shim_license),
+            "provenance_sha256": digest(ROOT / 'WASI_SHIM.json'),
+        },
         "packages": packages,
     }, "\n".join(notices)
 
