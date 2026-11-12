@@ -219,11 +219,25 @@ void main() {
     }, 'Native WebKit selection did not reach the system clipboard.');
 
     final fullSelection = selection!.cfi;
+    // Clear Select All before starting a new selection. Dragging already
+    // selected text asks the native browser for drag-and-drop instead. The
+    // screenshot-verified first paragraph occupies y=120..135 in this fixture;
+    // start inside its glyphs, not in the blank line above it.
+    await tester.tapAt(content.topLeft + const Offset(650, 300),
+        kind: PointerDeviceKind.mouse);
+    await tester.pump(const Duration(milliseconds: 100));
     final gesture = await tester.startGesture(
-      content.topLeft + const Offset(95, 105),
+      content.topLeft + const Offset(62, 128),
       kind: PointerDeviceKind.mouse,
     );
-    await gesture.moveTo(content.topLeft + const Offset(480, 150));
+    await tester.pump(const Duration(milliseconds: 50));
+    // Give WebKit's separate web process a real sequence of drag motion events,
+    // rather than a down/move/up burst in a single Flutter test frame.
+    for (var step = 1; step <= 8; step++) {
+      await gesture.moveTo(
+          content.topLeft + Offset(62 + (480 - 62) * step / 8, 128));
+      await tester.pump(const Duration(milliseconds: 25));
+    }
     await gesture.up();
     await until(
         tester,
@@ -232,6 +246,17 @@ void main() {
             selection!.cfi != fullSelection &&
             selection!.text.isNotEmpty,
         'Dragging in the native content did not update text selection.');
+    expect(selection!.text, contains('lanterns'));
+    expect(selection!.text, isNot(contains('Library paragraph')),
+        reason: 'The drag retained Select All instead of a new native range.');
+    final draggedText = selection!.text;
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyC);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+    await until(tester, () async {
+      final value = await Clipboard.getData(Clipboard.kTextPlain);
+      return value?.text == draggedText;
+    }, 'The dragged native range did not reach the system clipboard.');
 
     final oldLocation = controller.location?.cfi;
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
