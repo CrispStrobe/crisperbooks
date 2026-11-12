@@ -153,6 +153,7 @@ class _EbookChapterReaderState extends State<EbookChapterReader> {
     _index = _boundedSection(_index);
     final generation = ++_loadGeneration;
     ++_navigationGeneration;
+    _restoring = false;
     _prepared = null;
     _error = null;
     _html = GlobalKey<HtmlWidgetState>();
@@ -180,6 +181,9 @@ class _EbookChapterReaderState extends State<EbookChapterReader> {
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || generation != _loadGeneration) return;
+        // Failed rendering must not replace a persisted position with a
+        // synthetic chapter-start location or announce a readable book.
+        if (_error != null || _prepared == null) return;
         _announceReady();
         final target = _pendingTarget ?? EbookChapterTarget(path: path);
         _pendingTarget = null;
@@ -239,11 +243,17 @@ class _EbookChapterReaderState extends State<EbookChapterReader> {
   }
 
   Future<void> _restoreTarget(EbookChapterTarget target) async {
+    if (_loading || _error != null) return;
     final generation = ++_navigationGeneration;
     _restoring = true;
     var anchored = false;
-    if (target.fragment.isNotEmpty && _html.currentState != null) {
-      anchored = await _html.currentState!.scrollToAnchor(target.fragment);
+    try {
+      if (target.fragment.isNotEmpty && _html.currentState != null) {
+        anchored = await _html.currentState!.scrollToAnchor(target.fragment);
+      }
+    } on Exception {
+      // A target can disappear during a publisher-markup rebuild. Fall back
+      // to its stored scroll fraction if this navigation is still current.
     }
     if (!mounted || generation != _navigationGeneration) return;
     if (!anchored && _scroll.hasClients) {
@@ -262,6 +272,7 @@ class _EbookChapterReaderState extends State<EbookChapterReader> {
   }
 
   void _emitLocation({String fragment = ''}) {
+    if (_loading || _error != null) return;
     final chapters = widget.document.chapters;
     if (chapters.isEmpty || _index >= chapters.length) return;
     final chapter = chapters[_index];
@@ -375,14 +386,14 @@ class _EbookChapterReaderState extends State<EbookChapterReader> {
                   icon: const Icon(Icons.chevron_right),
                 ),
                 IconButton(
-                  tooltip: 'Smaller text',
+                  tooltip: widget.translate('Smaller text'),
                   onPressed: _appearance.fontSize > 10
                       ? () => _changeFont(-2)
                       : null,
                   icon: const Icon(Icons.text_decrease),
                 ),
                 IconButton(
-                  tooltip: 'Larger text',
+                  tooltip: widget.translate('Larger text'),
                   onPressed: _appearance.fontSize < 48
                       ? () => _changeFont(2)
                       : null,

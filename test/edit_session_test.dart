@@ -68,6 +68,46 @@ void main() {
   });
 
   test(
+    'direct document edits cannot reuse a saved state or redo branch',
+    () async {
+      final session = _session();
+      session.mutate((book) => book.updateMetadata(title: 'Saved branch'));
+      final savedState = session.stateId;
+      await session.save((_) async => EbookSaveOutcome.savedOriginal);
+      session.undo();
+      expect(session.canRedo, isTrue);
+
+      session.document.updateMetadata(title: 'Direct edit');
+      expect(session.isDirty, isTrue);
+      expect(session.canRedo, isFalse);
+      expect(session.stateId, isNot(savedState));
+      session.redo();
+      expect(session.document.title, 'Direct edit');
+      await session.save((bytes) async {
+        expect(EpubDocument.open(bytes).title, 'Direct edit');
+        return EbookSaveOutcome.savedOriginal;
+      });
+      expect(session.isDirty, isFalse);
+    },
+  );
+
+  test('direct edits during an upload remain dirty after completion', () async {
+    final session = _session();
+    session.mutate((book) => book.updateMetadata(title: 'Uploaded version'));
+    final upload = Completer<EbookSaveOutcome>();
+    final saving = session.save((_) => upload.future);
+    session.document.updateMetadata(title: 'Unsubmitted direct edit');
+    upload.complete(EbookSaveOutcome.savedOriginal);
+    await saving;
+    expect(session.isDirty, isTrue);
+    expect(session.document.dirty, isTrue);
+    session.mutate((book) => book.updateMetadata(title: 'Tracked next edit'));
+    session.undo();
+    expect(session.document.title, 'Unsubmitted direct edit');
+    expect(session.isDirty, isTrue);
+  });
+
+  test(
     'an asynchronous save submits immutable bytes and keeps newer edits dirty',
     () async {
       final session = _session();
@@ -199,6 +239,65 @@ void main() {
     expect(notifications, 0);
   });
 
+  test('reentrant session commands roll back the entire composite edit', () {
+    final session = _session();
+    session.mutate((book) => book.updateMetadata(title: 'First edit'));
+    session.undo();
+    final originalState = session.stateId;
+    var notifications = 0;
+    session.addListener(() => notifications++);
+    for (final command in <void Function()>[
+      () => session.mutate((book) => book.addChapter(title: 'Nested edit')),
+      session.undo,
+      session.redo,
+      session.exportBytes,
+      session.dispose,
+    ]) {
+      expect(
+        () => session.mutate((book) {
+          book.updateMetadata(title: 'Uncommitted edit');
+          command();
+        }),
+        throwsStateError,
+      );
+      expect(session.document.title, 'Original title');
+      expect(session.document.chapters, hasLength(1));
+      expect(session.stateId, originalState);
+      expect(session.isDirty, isFalse);
+      expect(session.canUndo, isFalse);
+      expect(session.canRedo, isTrue);
+    }
+    expect(notifications, 0);
+    session.redo();
+    expect(session.document.title, 'First edit');
+  });
+
+  test(
+    'async mutation callbacks cannot commit partial or delayed edits',
+    () async {
+      final session = _session();
+      final resume = Completer<void>();
+      expect(
+        () => session.mutate((book) async {
+          book.updateMetadata(title: 'Premature edit');
+          await resume.future;
+          book.updateMetadata(title: 'Delayed edit');
+          throw StateError('The rejected async operation failed');
+        }),
+        throwsArgumentError,
+      );
+      expect(session.document.title, 'Original title');
+      expect(session.isDirty, isFalse);
+      expect(session.canUndo, isFalse);
+      resume.complete();
+      await Future<void>.delayed(Duration.zero);
+      expect(session.document.title, 'Original title');
+      expect(session.isDirty, isFalse);
+      session.mutate((book) => book.updateMetadata(title: 'Synchronous edit'));
+      expect(session.isDirty, isTrue);
+    },
+  );
+
   test(
     'source validation prevents a writer from receiving broken XHTML',
     () async {
@@ -238,6 +337,21 @@ void main() {
     expect(session.canUndo, isFalse);
     session.redo();
     expect(session.document.title, 'Revision 2');
+  });
+
+  test('history limits reject negatives and allow explicit zero retention', () {
+    expect(
+      () => EbookEditSession(_openedBook(), maxHistoryEntries: -1),
+      throwsRangeError,
+    );
+    expect(
+      () => EbookEditSession(_openedBook(), maxHistoryBytes: -1),
+      throwsRangeError,
+    );
+    final session = _session(maxHistoryEntries: 0);
+    session.mutate((book) => book.updateMetadata(title: 'No undo allocation'));
+    expect(session.canUndo, isFalse);
+    expect(session.isDirty, isTrue);
   });
 
   test(

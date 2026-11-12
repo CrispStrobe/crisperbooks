@@ -251,6 +251,41 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('failed chapter rendering does not overwrite a saved location', (
+    tester,
+  ) async {
+    final book = _htmlBook([
+      '${'<div>' * 140}Unrenderable chapter${'</div>' * 140}',
+      '<p>A readable second chapter.</p>',
+    ]);
+    final controller = EbookChapterReaderController();
+    addTearDown(controller.dispose);
+    final locations = <EbookLocation>[];
+    final ready = <EbookBookInfo>[];
+    await _pumpReader(
+      tester,
+      book,
+      controller: controller,
+      initialLocation: EbookChapterTarget(
+        path: book.chapters.first.path,
+        progress: .75,
+      ).locator,
+      onLocationChanged: locations.add,
+      onReady: ready.add,
+    );
+    expect(find.textContaining('too complex'), findsOneWidget);
+    expect(locations, isEmpty);
+    expect(controller.location, isNull);
+    expect(ready, isEmpty);
+
+    await controller.next();
+    await tester.pumpAndSettle();
+    expect(_selectedChapter(tester), 1);
+    expect(locations.single.sectionIndex, 1);
+    expect(ready, hasLength(1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('chapter removal clamps the current section during rebuilds', (
     tester,
   ) async {

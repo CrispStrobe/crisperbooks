@@ -19,6 +19,17 @@ dirty; a downloaded/exported copy does not acknowledge an original overwrite.
 Failed writes retain the draft. Normalized non-EPUB publications use a copy-only
 session. The host owns conflict checks and the destination.
 
+Apply edits through `session.mutate` and await external work before entering that
+synchronous callback. Nested history/save commands and asynchronous callbacks
+are rejected, and a failed composite edit restores the entire starting package.
+The public document is mutable for compatibility with the core API; direct
+changes remain unsaved and invalidate redo, but do not get their own undo entry
+or listener notification. Use `mutate` for all user-facing editing operations.
+
+Portable reading emits readiness and reading-position callbacks only after a
+chapter has prepared successfully. A failed chapter leaves the last persisted
+location alone while retaining chapter navigation for recovery.
+
 Existing `crispcloud-ebook-reading-data` sidecars and renderer identifiers remain
 compatible. Renaming this wire identifier would break existing exports. Locators
 bind to the exact publication bytes and renderer; incompatible imports fail.
