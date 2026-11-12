@@ -134,6 +134,7 @@ jobs:
           python tool/check_vendor.py
           python tool/check_licenses.py
           python tool/check_wasm.py
+          python tool/check_conversion_wasm.py
           mkdir -p build/web-probe
           dart compile js tool/web_probe.dart -o build/web-probe/capabilities.js
       - uses: actions/setup-node@v4
@@ -149,11 +150,12 @@ jobs:
           EBOOK_NO_WORKER_PROBE_OUTPUT="$(node -e 'globalThis.self = globalThis; require("./build/web-probe/capabilities.js")')"
           printf '%s\n' "$EBOOK_NO_WORKER_PROBE_OUTPUT"
           test "$EBOOK_NO_WORKER_PROBE_OUTPUT" = 'Browser converter capability: unavailable, as designed.'
-      - name: Verify metadata Wasm parity and production Dart worker lifecycle
+      - name: Verify conversion/metadata Wasm parity and production Dart worker lifecycle
         if: runner.os == 'Linux'
         working-directory: packages/crisp_ebook_conversion
         run: |
           node tool/metadata_wasm_smoke.mjs
+          node tool/conversion_wasm_smoke.mjs
           mkdir -p build/web-metadata
           dart compile js tool/web_metadata_probe.dart -o build/web-metadata/probe.js
           node tool/run_web_metadata_probe.mjs
@@ -208,7 +210,7 @@ jobs:
           EBOOK_CHROMIUM_PATH="$(node --input-type=module -e 'import {chromium} from "playwright"; process.stdout.write(chromium.executablePath())')"
           printf 'EBOOK_CHROMIUM_PATH=%s\n' "$EBOOK_CHROMIUM_PATH" >> "$GITHUB_ENV"
           CHROMIUM_PATH="$EBOOK_CHROMIUM_PATH" npm run test:browser -- ../crisp_ebook_conversion/test/fixtures/generated/*.azw3 ../crisp_ebook_conversion/test/fixtures/generated/*.mobi
-      - name: Verify production metadata worker in actual Chromium
+      - name: Verify production conversion worker in actual Chromium
         if: runner.os == 'Linux'
         working-directory: packages/crisp_ebook_conversion
         run: CHROMIUM_PATH="$EBOOK_CHROMIUM_PATH" node tool/run_web_metadata_probe.mjs --browser

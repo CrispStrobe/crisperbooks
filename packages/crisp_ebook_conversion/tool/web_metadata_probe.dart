@@ -90,12 +90,17 @@ Future<void> main() async {
       check(exported.warnings.isNotEmpty, 'Conversion limitations reported');
       check(equalBytes(epub, epubBaseline), 'EPUB source retained');
       final rewrite = await converter.rewriteMetadata(
-        exported.bytes, patch: patch, format: format,
+        exported.bytes,
+        patch: patch,
+        format: format,
       );
       check(rewrite.changes.isNotEmpty, 'Export remains editable');
     }
-    for (final entry in {'traversal': 'invalidInput',
-      'external_resource': 'invalidInput', 'protected': 'drmProtected'}.entries) {
+    for (final entry in {
+      'traversal': 'invalidInput',
+      'external_resource': 'invalidInput',
+      'protected': 'drmProtected',
+    }.entries) {
       await fails(converter.exportKindle(fixtures[entry.key]!), entry.value);
     }
     await fails(
@@ -103,7 +108,10 @@ Future<void> main() async {
       'invalidInput',
     );
     final exportToken = EbookCancellationToken();
-    final cancelledExport = converter.exportKindle(epub, cancellation: exportToken);
+    final cancelledExport = converter.exportKindle(
+      epub,
+      cancellation: exportToken,
+    );
     exportToken.cancel();
     await fails(cancelledExport, 'cancelled');
     final smallArchive = KindlingConverter(

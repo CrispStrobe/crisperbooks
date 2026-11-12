@@ -23,7 +23,7 @@ the local file set and hashes with `python3 tool/check_vendor.py`.
 | `src/lib.rs` | Exclude the unused EPUB writer module. CrispCloud's package-preserving EPUB writer owns that operation. |
 | `src/extracted.rs` | Remove only the unused scraper HTML cache. Retain upstream lightningcss grammar checking and the existing Kindle rule extraction. |
 | `src/fonts.rs` | Stop an absent-encryption search at the EPUB container root so it does not inspect unrelated ancestor directories. |
-| `src/mobi.rs` | Preserve the source TOC in the legacy KF7 half of dual MOBI exports. Append a nested HTML TOC, insert its `type="toc"` guide reference, and resolve all navigation targets through the final byte-offset pass. |
+| `src/mobi.rs` | Preserve the source TOC in the legacy KF7 half of dual MOBI exports. Append a nested HTML TOC, insert its `type="toc"` guide reference, and resolve all navigation targets through the final byte-offset pass. Use the existing serial compressor on Wasm targets where native thread creation is unsupported. |
 | `src/mobi_rewrite.rs` | Extract the shared metadata byte API behind the native file wrapper; validate PalmDB/section bounds and encrypted secondary KF8 headers; avoid inflating embedded source ZIPs for ordinary metadata edits; preserve UTF-8/Windows-1252 metadata encoding with lossless rejection, set the EXTH-present flag on inserted blocks, and reconcile EXTH title/hash and header title independently. |
 
 The original checkpoint replaced lightningcss with a local delimiter-only
@@ -41,12 +41,20 @@ URLs. For published subcrates that omitted their workspace-root license,
 `.cargo_vcs_info.json` revision; the checker verifies that revision before using
 the supplemental notice.
 
-The browser metadata adapter uses the same reviewed byte implementation in a
-separate Wasm crate. `WASM.json` records the compiled asset, worker, source inputs,
-Rust compiler and pinned wasm-bindgen postprocessor. The final module has no
-host imports. EPUB-to-Kindle conversion and cover replacement remain native
-operations; no browser filesystem emulation or external conversion service is
-part of this adapter.
+The browser converter compiles the shared native request processor and builder
+for WASI Preview 1. Its only preopened path is `/job`, backed by a fresh
+in-memory directory; no host filesystem or OPFS module is exposed. Native path
+canonicalization remains enabled on native platforms. The WASI path instead
+requires the exact private `/job` root because Preview 1 cannot canonicalize it.
+`CONVERSION_WASM.json` tracks the compressed asset, expanded bytes, worker,
+runtime and source inputs. `WASI_SHIM.json` pins unmodified runtime modules from
+`@bjorn3/browser_wasi_shim` 0.4.2 with its MIT license. The converter does not
+upload publications or call an external conversion service.
+
+The separate metadata-only crate remains an independent byte-API regression
+target. `WASM.json` records its asset, sources, compiler and pinned wasm-bindgen
+postprocessor; that module has no host imports. Browser cover replacement is
+not exposed by the Dart adapter.
 
 ## Updating
 

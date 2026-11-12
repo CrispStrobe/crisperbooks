@@ -1,4 +1,4 @@
-# CrispCloud Kindle conversion
+# Crisperbooks Kindle conversion
 
 This package wraps the vendored Kindling 0.46.2 engine. It accepts immutable
 input bytes and returns output bytes; only the application save session writes
@@ -52,7 +52,7 @@ newer so a deployment target such as macOS 10.15 is not truncated to 10.0.
 | Windows | x64 and arm64 MSVC targets; the matching Visual Studio toolchain is required. |
 | iOS | arm64 device, arm64 simulator, and x64 simulator, using the selected iOS SDK. |
 | Android | arm64, armv7, and x64 through the NDK; shared-library alignment supports 16 KiB pages. |
-| Browser | Metadata fields in existing Kindle files use the bundled Wasm worker. EPUB-to-Kindle export and Kindle cover replacement require a native build. EPUB reading/editing and reader-side import are separate features. |
+| Browser | The bundled Wasm worker exports EPUB to AZW3/MOBI and edits existing Kindle metadata. Kindle cover replacement remains native-only. EPUB reading/editing and reader-side import are separate features. |
 
 These target mappings describe the build configuration. They do not establish
 that every target has passed a device runtime test. Check the feature's CI and
@@ -92,32 +92,53 @@ upstream synchronous build cannot be forcibly preempted. A separately built
 desktop helper can be supplied through `executablePath` when process termination
 is preferred. No helper is discovered or executed from arbitrary `PATH` entries.
 
-### Browser metadata editing
+### Browser conversion and metadata editing
 
-The browser uses the same reviewed Kindling metadata byte API as native builds,
-through a self-contained WebAssembly asset in a dedicated module worker. It can
-set or explicitly clear the supported metadata fields in existing unencrypted
-AZW3, dual-MOBI and legacy-MOBI files, retaining their text and resource records.
-It returns a new byte array for the host's download/export flow. No book is
-uploaded to a service and no original file is overwritten by the converter.
+The browser runs the same reviewed native request processor and Kindling builder
+inside a dedicated module worker. It exports EPUB to AZW3/KF8 or dual MOBI and
+sets or explicitly clears metadata in existing unencrypted AZW3, dual-MOBI and
+legacy-MOBI files. Metadata edits retain their text and resource records. Results
+are new byte arrays for the host's save/download flow.
 
-The worker is loaded from the Flutter package's assets relative to
-`document.baseURI`. A host can supply `webWorkerUri` for another bundled asset
-location on the same origin. Capabilities remain unavailable if the browser
-cannot load the worker/Wasm; ebook reading and EPUB editing are separate paths.
-The browser advertises metadata rewriting independently and does not advertise
-EPUB-to-Kindle export or cover replacement.
+The full engine targets `wasm32-wasip1`. Its only preopened directory is a fresh
+memory-only `/job`; it has no access to host files, OPFS, sockets or external
+conversion services. The pinned MIT-selected `@bjorn3/browser_wasi_shim` 0.4.2
+implements those in-memory filesystem calls. Native archive, markup, image and
+output validation is shared unchanged. WASI uses the existing sequential PalmDOC
+encoder for large books because Preview 1 cannot create threads. Tests require
+the same complete output bytes as native builds, apart from build timestamps.
 
-Each request owns a private input snapshot and a fresh worker. Timeout or
-cancellation terminates the worker, discards any partial output and releases its
-memory. Defaults allow 64 MiB input, 128 MiB output, 128 KiB metadata JSON and a
-384 MiB maximum Wasm memory. These are ceilings; browser or device resource limits
-can still make a job fail. The host receives structured errors and retains its
-original input.
+The worker is loaded from Flutter package assets relative to `document.baseURI`.
+A host may supply `webWorkerUri` for another bundled location on the same origin.
+The compressed engine uses the browser's built-in `DecompressionStream`; both
+compressed and decompressed downloads have explicit byte limits. A host that
+already decodes the response is also supported. Capabilities load the module and
+execute its version check before advertising AZW3, MOBI and metadata operations.
+Missing assets or unsupported browser features report unavailable. Cover
+replacement remains a separate native capability.
 
-The generated asset is checked in, so ordinary application builds do not need a
-Wasm compiler. `WASM.json` records the asset/worker/source hashes and build
-versions. To deliberately rebuild it from the reviewed sources:
+Each request owns a private snapshot and fresh worker. Cancellation or timeout
+terminates the worker, discards partial output and releases its memory. The
+browser enforces ceilings of 64 MiB input, 128 MiB output, 192 MiB expanded
+archive data, 32 MiB per entry, 10,000 archive entries, 50 million pixels per
+image, and 128 KiB request JSON. Wasm linear memory is limited to 512 MiB; the
+separate JS memory filesystem is bounded before writes and resizes. Browser or
+device resource constraints may still make a job fail. The host retains the
+original input and receives a structured error.
+
+The generated, deterministic gzip asset is checked in, so app builds need no
+Wasm compiler. `CONVERSION_WASM.json` records compressed and expanded hashes,
+worker/runtime hashes and build inputs. `WASI_SHIM.json` records the exact npm
+release, source hashes and selected license. Rebuild from reviewed sources with:
+
+```sh
+rustup target add wasm32-wasip1
+python3 tool/build_conversion_wasm.py
+python3 tool/check_conversion_wasm.py
+```
+
+The separate metadata-only byte module remains as a smaller, independent
+regression target. `WASM.json` records its asset and build inputs. Rebuild it with:
 
 ```sh
 rustup target add wasm32-unknown-unknown
@@ -126,12 +147,10 @@ python3 tool/build_metadata_wasm.py
 python3 tool/check_wasm.py
 ```
 
-The postprocessing step removes unused upstream bindgen descriptors; the final
-module has no host imports. Its active path performs no filesystem, clock,
-random-number or native-thread operations. The native file API delegates to the
-same byte implementation. Both paths refuse encrypted primary or KF8 sections
-and malformed PalmDB offsets. Ordinary metadata edits do not inflate the
-unrelated embedded source archive.
+This metadata-only module has no host imports. Both modules use the same
+metadata byte implementation, reject encrypted primary or KF8 sections and
+malformed PalmDB offsets, and avoid inflating unrelated embedded source ZIPs
+for ordinary metadata changes.
 
 ## Reproduce verification
 
@@ -158,15 +177,18 @@ and production Dart browser adapter:
 
 ```sh
 node tool/metadata_wasm_smoke.mjs
+node tool/conversion_wasm_smoke.mjs
 mkdir -p build/web-metadata
 dart compile js tool/web_metadata_probe.dart -o build/web-metadata/probe.js
 node tool/run_web_metadata_probe.mjs
 ```
 
-The first gate independently checks PalmDB/EXTH records for all three Kindle
-forms and requires byte-for-byte native/Wasm parity. The second executes the
-compiled Dart adapter in real Node workers with the actual bundled Wasm, testing
-capability loading, edits, worker termination, timeouts, concurrent requests,
+The metadata gate independently checks PalmDB/EXTH records for all three Kindle
+forms and requires byte-for-byte native/Wasm parity. The conversion gate compares
+complete native/Wasm output, including large books that cross the native
+threading threshold, and checks every archive/image/byte budget. The worker gate
+executes the compiled Dart adapter in real Node workers with the actual bundled Wasm, testing
+capability loading, both export formats, edits, worker termination, timeouts, concurrent requests,
 source snapshots, missing assets, same-origin enforcement and size limits.
 This worker/API test does not establish browser rendering compatibility. With
 the reader package's Playwright dependencies and Chromium installed, append
@@ -213,7 +235,9 @@ some of its dependencies use MPL-2.0, which is approved for this integration.
 Those crates are unmodified; the shipped `licensing/THIRD_PARTY_LICENSES.txt`
 contains their notices and links to the exact source releases. The complete
 resolved Cargo dependency inventory includes native and metadata-Wasm builds,
-with their platform and build dependencies.
+with their platform and build dependencies, plus the selected WASI shim grant.
+The shim is distributed with its original MIT license and unchanged ESM source;
+its OPFS module is not bundled.
 
 For a deliberate dependency change, review source/license changes before
 running `python3 tool/check_licenses.py --record`. The checker rejects an
