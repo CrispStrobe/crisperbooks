@@ -49,3 +49,13 @@ Local Chromium execution was attempted but stopped before opening a page because
 the managed environment rejects Chromium's process-singleton socket
 (`socket() failed: Operation not permitted`). No browser assertion ran locally;
 the new assertions are committed for the separate hosted browser gate.
+
+## Integration verification on the Mac
+
+The merged tree was verified with Node 26.4.0 and the installed Google Chrome
+using `CHROMIUM_PATH` and Python 3.11. The actual browser suite passed EPUB,
+FB2 and CBZ rendering, real native-selection delivery and both fixed-layout
+page identities, together with its existing sandbox, DRM and normalization
+checks. All eleven DOM selection controls, native-input checks, vendor checks,
+and normal and forced grouping/raw-inflate parser controls passed. This adds
+Chrome acceptance; native WebKit and device qualification remain separate gates.
