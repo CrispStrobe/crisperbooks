@@ -96,7 +96,9 @@ export function createReaderSelection(view, {
                 current.delete(doc)
             }
         }
-        previous = current
+        // Delivery can synchronously dispose or replace the reader. Do not
+        // retain the just-delivered document after disposal cleared our state.
+        previous = active() ? current : new Map()
         if (active()) timer = schedule(scan, delay)
     }
     timer = schedule(scan, delay)
@@ -110,6 +112,8 @@ export function createReaderSelection(view, {
             view = null
             indices = new WeakMap()
             previous.clear()
+            onSelection = null
+            isCurrent = null
         },
     }
 }
