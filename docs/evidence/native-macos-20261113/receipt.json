@@ -1,6 +1,6 @@
 {
   "source_commit": "32b00f43b6e5112f0b4168a09ff2dcba4c4e0a52",
-  "platform": "macOS 26.2 (25C56), Intel",
+  "platform": "macOS 26.2 (25C56), Apple Silicon",
   "flutter": "3.47.8",
   "dart": "3.13.7",
   "canonical_harness_sha256": "448e4658c28b6ea72dbb6a6e27dd71507d064f06de5270902ee359b7cdbe955f",
@@ -8,5 +8,6 @@
   "harness_delta": "Five additional progress log statements only; assertions and production sources unchanged.",
   "runtime_log_sha256": "439abc1f0307dbbf96f1dee6aec5154eee364af6ea924cda83d3ddcbd1284cef",
   "result": "Passed eight publication formats, edited Kindle/FictionBook exports, reading/navigation/search/data controls, and offline resource isolation.",
-  "runtime_log": "runtime.txt"
+  "runtime_log": "runtime.txt",
+  "executed_native_architecture": "arm64"
 }
