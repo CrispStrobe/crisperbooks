@@ -49,3 +49,29 @@ Local Chromium execution was attempted but stopped before opening a page because
 the managed environment rejects Chromium's process-singleton socket
 (`socket() failed: Operation not permitted`). No browser assertion ran locally;
 the new assertions are committed for the separate hosted browser gate.
+
+## Integration verification on the Mac
+
+The merged tree was verified with Node 26.4.0 and the installed Google Chrome
+using `CHROMIUM_PATH` and Python 3.11. The actual browser suite passed EPUB,
+FB2 and CBZ rendering, real native-selection delivery and both fixed-layout
+page identities, together with its existing sandbox, DRM and normalization
+checks. All eleven DOM selection controls, native-input checks, vendor checks,
+and normal and forced grouping/raw-inflate parser controls passed. This adds
+Chrome acceptance; native WebKit and device qualification remain separate gates.
+
+## Reconciliation with concurrent canonical work
+
+The Mac acceptance above is retained from canonical evidence commit
+`37963811423d33ef57c0bcab858de91093d4b9ed`, following integration
+`be594cadb1ab4226f33624dbdc7704cbbaaf571a`. It was not rerun in the managed
+workspace, and it predates the final synchronous-disposal cleanup.
+
+The recovery branch merges canonical main
+`c4f64e119e9d94c2c5f42f9cede54d76e22f0595` with recovery checkpoint
+`ac9925c46c982a545a18bc8d5616b5d874da51c9`, retaining both histories and the
+cleanup that releases callbacks and document references during synchronous
+disposal. Relative to that recovery checkpoint, only this evidence document and
+the README change; all package sources, tests, runtime bytes and CI files are
+identical. The reconciled tree passes all eleven real-DOM selection cases and
+the vendor guard for sixteen pinned runtime files and five license notices.

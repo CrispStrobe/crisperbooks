@@ -1,8 +1,15 @@
 # Crisperbooks
 
-Offline ebook reading and editing for Flutter and Dart, extracted from
+Offline ebook reading and editing for Flutter and Dart, used by
 [CrispCloud](https://github.com/CrispStrobe/CrispCloud). The packages accept book
 bytes and return data; your application controls files, accounts and persistence.
+
+The enhanced reader observes native selections from its trusted host, limits
+quote capture to 20,000 code units and 4,096 traversal steps, and binds
+fixed-layout locations to the renderer's actual section load events. Current
+selection recovery passes real Chrome rendering/bridge checks as well as the
+deterministic DOM controls. This increment does not establish new device or
+native WebKit acceptance; see the [selection verification](docs/reader-selection-recovery-20261113.md).
 
 ## Packages
 
