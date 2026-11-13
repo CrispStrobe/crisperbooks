@@ -16,6 +16,20 @@ for encrypted in [False, True]:
         for path, data in {'META-INF/container.xml':container,'OPS/book.opf':opf,'OPS/one.xhtml':one,'OPS/two.xhtml':two,'OPS/nav.xhtml':nav,'OPS/book.css':'@import \"theme.css\"; body { font-family:serif; }', 'OPS/theme.css':'@import url(\"accent.css\") screen; h1 { color:#1f5947; } body { background-image:url(cover.png); }', 'OPS/accent.css':'p { letter-spacing:0.1px; } svg { clip-path:url(symbols.svg#clip); }', 'OPS/symbols.svg':'<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 20 20\"><defs><clipPath id=\"clip\"><circle cx=\"10\" cy=\"10\" r=\"10\"/></clipPath><symbol id=\"mark\"><rect width=\"20\" height=\"20\"/></symbol></defs><image href=\"cover.png\" width=\"20\" height=\"20\"/></svg>','OPS/cover.png':png,'OPS/bad.js':'parent.__bookScriptRan = true'}.items():
             z.writestr(path,data,compress_type=zipfile.ZIP_DEFLATED)
         if encrypted: z.writestr('META-INF/encryption.xml','<encryption xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><EncryptedData xmlns="http://www.w3.org/2001/04/xmlenc#"><EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/><CipherData><CipherReference URI="OPS/one.xhtml"/></CipherData></EncryptedData></encryption>')
+with zipfile.ZipFile(out/'fixed-selection.epub','w') as z:
+    z.writestr('mimetype','application/epub+zip',compress_type=zipfile.ZIP_STORED)
+    z.writestr('META-INF/container.xml',container)
+    z.writestr('OPS/book.opf',opf.replace('</metadata>',
+        '<meta property="rendition:layout">pre-paginated</meta><meta property="rendition:spread">none</meta></metadata>'))
+    z.writestr('OPS/nav.xhtml',nav)
+    for name, label in [('one','First fixed page'), ('two','Second fixed page')]:
+        z.writestr(f'OPS/{name}.xhtml',chapter(f'<h1 id="fixed-{name}">{label}</h1>').replace(
+            '<head>', '<head><meta name="viewport" content="width=600,height=800"/>'))
+    for name in ['book.css','theme.css','accent.css']:
+        z.writestr('OPS/'+name,'')
+    z.writestr('OPS/cover.png',png)
+    z.writestr('OPS/symbols.svg','<svg xmlns="http://www.w3.org/2000/svg"/>')
+    z.writestr('OPS/bad.js','')
 with zipfile.ZipFile(out/'fixture.cbz','w') as z:
     z.writestr('page-1.png',png)
     z.writestr('page-2.png',png)

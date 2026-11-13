@@ -116,6 +116,17 @@ try {
             console.log(`PASS ${ext}: ${payload.readingOrder.length} chapters, ${payload.resources.length} resources; ${payload.warnings.length} warnings`)
         } finally {cleanup(); book.destroy?.()}
     }
+    const fixedSelection = await open(join(temporary, 'fixed-selection.epub'))
+    try {
+        assert.equal(fixedSelection.book.rendition.layout, 'pre-paginated')
+        assert.equal(fixedSelection.book.sections.length, 2)
+        for (const [index, section] of fixedSelection.book.sections.entries()) {
+            const doc = await section.createDocument()
+            assert(doc.querySelector(index === 0 ? '#fixed-one' : '#fixed-two'))
+            assert.equal(doc.querySelector('meta[name="viewport"]').getAttribute('content'), 'width=600,height=800')
+        }
+        console.log('PASS fixed-layout selection fixture: two independently indexed text pages')
+    } finally { fixedSelection.cleanup(); fixedSelection.book.destroy?.() }
     await assert.rejects(open(join(temporary,'encrypted.epub')),/DRM-protected/)
     for (const path of process.argv.slice(2)) {
         const {book,cleanup} = await open(resolve(path))

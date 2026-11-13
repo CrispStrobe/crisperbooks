@@ -92,6 +92,30 @@ try {
         window.__messages.filter(message => message.event === name).at(-1)?.data, event)
     const waitForSection = index => page.waitForFunction(section =>
         window.__messages.filter(message => message.event === 'location').at(-1)?.data.sectionIndex === section, index)
+    const checkNativeSelection = async (index, selector) => {
+        const expected = await page.evaluate(({index, selector}) => {
+            const view = document.querySelector('foliate-view')
+            const doc = view.renderer.getContents().map(item => item.doc)
+                .find(doc => doc?.querySelector(selector))
+            if (!doc) throw new Error(`No rendered selection fixture ${selector}`)
+            window.__messages = window.__messages.filter(message => message.event !== 'selection')
+            const range = doc.createRange()
+            range.selectNodeContents(doc.querySelector(selector))
+            const selection = doc.getSelection()
+            selection.removeAllRanges()
+            selection.addRange(range)
+            return {text:selection.toString(), cfi:view.getCFI(index, range), sectionIndex:index}
+        }, {index, selector})
+        await page.waitForFunction(expected => window.__messages.some(message =>
+            message.event === 'selection' && message.data.text === expected.text &&
+            message.data.cfi === expected.cfi && message.data.sectionIndex === expected.sectionIndex), expected)
+        assert.deepEqual(await lastEvent('selection'), expected)
+        await page.evaluate(() => {
+            for (const {doc} of document.querySelector('foliate-view').renderer.getContents())
+                doc?.getSelection()?.removeAllRanges()
+        })
+    }
+    await checkNativeSelection(0, '#start')
     const initialLocation = await lastEvent('location')
     await command('next')
     await page.waitForFunction(cfi =>
@@ -257,6 +281,15 @@ try {
     const cbzExport = await command('exportPublication')
     assert.equal(cbzExport.readingOrder.length,2)
     assert.equal(cbzExport.layout,'pre-paginated')
+    const fixed = await open(join(temporary,'fixed-selection.epub'))
+    assert.equal(fixed.fixedLayout, true)
+    assert(await page.evaluate(() => document.querySelector('foliate-view').renderer
+        .getContents().every(item => item.index === undefined)),
+        'The fixed-layout fixture exercises the missing-content-index boundary')
+    await checkNativeSelection(0, '#fixed-one')
+    await command('goToFraction', {fraction:1})
+    await waitForSection(1)
+    await checkNativeSelection(1, '#fixed-two')
     await assert.rejects(open(join(temporary,'encrypted.epub')),/DRM-protected/)
     for (const file of process.argv.slice(2)) {
         const info = await open(resolve(file))
@@ -267,7 +300,7 @@ try {
         console.log(`PASS ${file}: ${info.sectionCount} chapters, ${payload.resources.length} resources, ${payload.warnings.length} warnings`)
     }
     assert.deepEqual(errors,[], errors.join('\n'))
-    console.log('PASS EPUB/FB2/CBZ render, TOC, search, progress/history, publisher styles, CFI-preserving appearance, fixed-layout capabilities, highlights, offline normalization, link/image/CSS preservation, script isolation and DRM rejection')
+    console.log('PASS EPUB/FB2/CBZ render, TOC, search, progress/history, publisher styles, CFI-preserving appearance, native selection and fixed-layout section identity, highlights, offline normalization, link/image/CSS preservation, script isolation and DRM rejection')
 } finally {
     await browser?.close()
     await new Promise(resolve => server.close(resolve))

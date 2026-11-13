@@ -37,3 +37,15 @@ reflow recovery, and reader replacement/disposal.
 These deterministic DOM checks do not establish a new native WebKit, Chromium,
 or device acceptance result. Existing hosted reader workflows run this file;
 the actual-browser suite remains a separate qualification gate.
+
+The normal and forced grouping/raw-inflate compatibility parser suites pass,
+including the new two-page fixed-layout text fixture. The native input-adapter
+checks also pass. The hosted step installs its existing pinned npm dependencies
+before running the real-DOM selection checks.
+
+The browser suite now selects real text through the host bridge in an ordinary
+EPUB and on both fixed-layout pages, checking exact text, CFI and section index.
+Local Chromium execution was attempted but stopped before opening a page because
+the managed environment rejects Chromium's process-singleton socket
+(`socket() failed: Operation not permitted`). No browser assertion ran locally;
+the new assertions are committed for the separate hosted browser gate.
