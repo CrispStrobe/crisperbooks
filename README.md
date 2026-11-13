@@ -88,3 +88,12 @@ retain AGPL-3.0; the reader/converter keep their package licenses.
 The native acceptance harness uses a generated original cover fixture, the workspace package configuration, an explicit Bash pipeline on Android, and a scoped compatibility definition for the Windows WebView plugin on current MSVC. These fixes preserve the production reader and converter validation requirements.
 
 Apple acceptance uses the explicit Intel macOS 15 runner and Xcode 26.3, avoiding the observed arm64 runner allocation failures. Android harness projects use the host-supported AGP 8.11.1, Kotlin 2.2.20 and Gradle 8.14.1 line. Workspace-aware FictionBook and Kindle import verification runs the actual converters and independent schema/EPUBCheck gates.
+
+The unchanged `32b00f4` production packages passed the actual macOS 26.2
+integration harness, including all eight publication-format cases, edited
+Kindle/FictionBook exports and offline isolation. The compact
+[execution log and source receipt](docs/evidence/native-macos-20261113/receipt.json)
+retain the exact harness hashes; its only local changes add five progress logs.
+The earlier hosted Mac job exhausted its combined build/test budget. Its budget
+is now 90 minutes to cover both Rust builds and the real WebView host; publication
+deadlines and assertions are unchanged. Hosted completion remains a separate gate.

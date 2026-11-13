@@ -84,7 +84,7 @@ jobs:
   native-and-reader:
     name: Kindle runtime (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 55
+    timeout-minutes: ${{ matrix.os == 'macos-15-intel' && 90 || 55 }}
     strategy:
       fail-fast: false
       matrix:

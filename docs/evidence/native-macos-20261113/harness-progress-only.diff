@@ -1,0 +1,34 @@
+--- canonical-harness
++++ progress-logging-harness
+@@ -261,6 +261,7 @@
+         debugPrint('ebook host: passed ${entry.key}');
+       }
+ 
++      debugPrint('ebook host: starting edited-copy checks');
+       document.updateMetadata(title: 'Edited native library');
+       final last = document.chapters.last.path;
+       document.updateText(
+@@ -274,12 +275,15 @@
+       expect(reopened.title, 'Edited native library');
+       expect(input, baseline);
+       // The native export must contain edited body text, not only new metadata.
++      debugPrint('ebook host: exporting edited Kindle');
+       final editedKindle = await converter.exportKindle(edited);
++      debugPrint('ebook host: opening edited Kindle');
+       await open(editedKindle.bytes, 'edited.azw3');
+       expect(controller.bookInfo!.title, 'Edited native library');
+       expect(await controller.search('Edited native passage'), isNotEmpty);
+       expect(await controller.search('Cross-platform needle'), isEmpty);
+       await close();
++      debugPrint('ebook host: passed edited Kindle');
+ 
+       for (final zipped in [false, true]) {
+         final exported = document.exportFictionBook(zipped: zipped);
+@@ -290,6 +294,7 @@
+         await close();
+       }
+ 
++      debugPrint('ebook host: starting offline isolation');
+       final requests = <Uri>[];
+       final probe = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+       addTearDown(() => probe.close(force: true));
