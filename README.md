@@ -1,6 +1,6 @@
 # Crisperbooks
 
-Offline ebook reading and editing for Flutter and Dart, extracted from
+Offline ebook reading and editing for Flutter and Dart, used by
 [CrispCloud](https://github.com/CrispStrobe/CrispCloud). The packages accept book
 bytes and return data; your application controls files, accounts and persistence.
 
