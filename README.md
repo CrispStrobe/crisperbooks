@@ -89,6 +89,11 @@ The native acceptance harness uses a generated original cover fixture, the works
 
 Apple acceptance uses the explicit Intel macOS 15 runner and Xcode 26.3, avoiding the observed arm64 runner allocation failures. Android harness projects use the host-supported AGP 8.11.1, Kotlin 2.2.20 and Gradle 8.14.1 line. Workspace-aware FictionBook and Kindle import verification runs the actual converters and independent schema/EPUBCheck gates.
 
+The isolated macOS CI host explicitly activates its window and prevents App Nap
+while checking WebKit pagination. This addresses hosted runners that fail to
+foreground Flutter test apps; production packages and navigation assertions are
+unchanged. The iOS simulator job allows 75 minutes for cold native builds.
+
 The unchanged `32b00f4` production packages passed the actual macOS 26.2
 integration harness, including all eight publication-format cases, edited
 Kindle/FictionBook exports and offline isolation. The compact

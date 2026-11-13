@@ -234,7 +234,7 @@ jobs:
   mobile-host:
     name: Actual ebook host (${{ matrix.platform }})
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 50
+    timeout-minutes: ${{ matrix.platform == 'ios' && 75 || 50 }}
     strategy:
       fail-fast: false
       matrix:

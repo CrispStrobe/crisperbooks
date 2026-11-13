@@ -147,6 +147,31 @@ flutter:
                 raise ValueError("Cannot identify the generated CocoaPods platform.")
             podfile.write_text(source, encoding="utf-8")
         if platform == "macos":
+            # Flutter's test launcher can fail to foreground an app on hosted
+            # macOS runners. WebKit then throttles animation-driven pagination.
+            # Keep this isolated test host interactive, without changing the
+            # production reader or relaxing any navigation assertions.
+            delegate = output / "macos/Runner/AppDelegate.swift"
+            source = delegate.read_text(encoding="utf-8")
+            declaration = "class AppDelegate: FlutterAppDelegate {"
+            if source.count(declaration) != 1:
+                raise ValueError("Cannot identify the generated macOS app delegate.")
+            source = source.replace(declaration, declaration + """
+  private var testActivity: NSObjectProtocol?
+
+  override func applicationDidFinishLaunching(_ notification: Notification) {
+    super.applicationDidFinishLaunching(notification)
+    testActivity = ProcessInfo.processInfo.beginActivity(
+      options: [.userInitiated, .latencyCritical],
+      reason: "Exercise foreground WebKit pagination in the native integration host")
+    NSApp.setActivationPolicy(.regular)
+    NSApp.activate(ignoringOtherApps: true)
+    for window in NSApp.windows {
+      window.makeKeyAndOrderFront(nil)
+    }
+  }
+""")
+            delegate.write_text(source, encoding="utf-8")
             for name in ["DebugProfile.entitlements", "Release.entitlements"]:
                 entitlement = output / "macos/Runner" / name
                 with entitlement.open("rb") as file:
