@@ -181,10 +181,19 @@ async function open(args) {
     await view.open(book)
     guardRendererLifecycle(view)
     applyAppearance(args.appearance ?? {})
-    await view.init({lastLocation:args.initialLocation || undefined, showTextStart:false})
-    selectionObserver = createReaderSelection(currentView, {onSelection:data => {
+    // Observe before init emits the first load events: fixed-layout contents
+    // do not expose their section index after loading.
+    const observer = createReaderSelection(currentView, {isCurrent:() => view === currentView, onSelection:data => {
         if (view === currentView) send({event:'selection', data})
     }})
+    selectionObserver = observer
+    try {
+        await view.init({lastLocation:args.initialLocation || undefined, showTextStart:false})
+    } catch (error) {
+        observer.dispose()
+        if (selectionObserver === observer) selectionObserver = null
+        throw error
+    }
     const speechOverlay = '__crisp_read_aloud__'
     const clearSpeechHighlight = () => {
         for (const item of currentView.renderer?.getContents?.() ?? [])
