@@ -1,0 +1,26 @@
+00:00 +0: real platform reading, conversion, editing and offline isolation
+ebook host: macos Version 26.2 (Build 25C56)
+ebook host: opening library.epub
+ebook host: passed library.epub
+ebook host: opening library.azw3
+ebook host: passed library.azw3
+ebook host: opening library.mobi
+ebook host: passed library.mobi
+ebook host: opening library.fb2
+ebook host: passed library.fb2
+ebook host: opening library.fbz
+ebook host: passed library.fbz
+ebook host: opening exported.fb2
+ebook host: passed exported.fb2
+ebook host: opening exported.fbz
+ebook host: passed exported.fbz
+ebook host: opening exported.fb2.zip
+ebook host: passed exported.fb2.zip
+ebook host: starting edited-copy checks
+ebook host: exporting edited Kindle
+ebook host: opening edited Kindle
+ebook host: passed edited Kindle
+ebook host: starting offline isolation
+ebook host: all runtime contracts passed
+00:24 +1: (tearDownAll)
+00:24 +1: All tests passed!

@@ -7,5 +7,6 @@
   "executed_harness_sha256": "222fdb060278e81ab6c252fc85529dfaf59c5aa16ca4db2a960fbcfb8d437d84",
   "harness_delta": "Five additional progress log statements only; assertions and production sources unchanged.",
   "runtime_log_sha256": "439abc1f0307dbbf96f1dee6aec5154eee364af6ea924cda83d3ddcbd1284cef",
-  "result": "Passed eight publication formats, edited Kindle/FictionBook exports, reading/navigation/search/data controls, and offline resource isolation."
+  "result": "Passed eight publication formats, edited Kindle/FictionBook exports, reading/navigation/search/data controls, and offline resource isolation.",
+  "runtime_log": "runtime.txt"
 }
